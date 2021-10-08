@@ -14,7 +14,8 @@
         </style>
   </head>
   <body>
-    
+
+  //////////////////////////////////////////////////////////////////////////////////////////
    <!--Librerias de graficacion-->
     <script src="js/three.min.js"></script>
     <script src='js/libs/dat.gui.min.js'></script>
@@ -26,9 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
     
     <script>
-    
-        
-        
+      
 	var scene, aspect, camera, renderer,controls;
 		
 	init();
@@ -40,7 +39,7 @@
         //Creacion de la escena 3D
         creacion();
 
-//////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////
             
         //Pruebas clase particula
         var particula = new Particula(new THREE.Vector3(50,10,15), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,0.1);
@@ -53,23 +52,17 @@
         
         
 	}
-		
-        
-        
-        
-        
+  
 	function animate() {
 			requestAnimationFrame( animate );
 			render();
 			renderer.render( scene, camera );
 	}
  
-        
-        
-        
-        
-        
+  
 	function render(){
+        
+        
     }
 	
 	
