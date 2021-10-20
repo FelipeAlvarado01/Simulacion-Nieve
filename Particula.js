@@ -48,19 +48,36 @@ class Particula{
 	
     //Calculos para la interpolacion b-spline
     Calculos_limites_vencidad(){
-        
+       //round es para dejar el numero entero
+       this.i_lo = Math.round(Math.max(Math.ceil(this.posicion.x/this.h-2),0));
+       this.i_hi = Math.round(Math.min(Math.floor(this.posicion.x/this.h+2) + 1,this.res.x));
+       this.j_lo = Math.round(Math.max(Math.ceil(this.posicion.y/this.h-2),0));
+       this.j_hi = Math.round(Math.min(Math.floor(this.posicion.y/this.h+2) + 1,this.res.y));
+       this.z_lo = Math.round(Math.max(Math.ceil(this.posicion.z/this.h-2),0));
+       this.z_hi = Math.round(Math.min(Math.floor(this.posicion.z/this.h+2) + 1,this.res.z)); 
     }
     
     Calculos_gradiente_b_spline(){
-        
+        for( var dest_i=this.i_lo; des_i<this.i_hi ; des_i++){
+            for(var dest_j=this.j_lo; des_j<this.j_hi ; des_j++){
+                for(var dest_k=this.k_lo; des_k<this.k_hi ; des_k++){
+                    
+                    //vector_particual/h-vector_des
+                    var scaled = particula.posicion.divideScalar(0.1).sub(new THREE.Vector3(dest_i, dest_j, dest_k));
+                    this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Funcion b_spline proviene de interpolacion.js
+                    this.val_grad_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline_grad(scaled, this.h); //Funcion b_spline_grad proviene de interpolacion.js
+                    
+                }
+            }
+        }
     }
     
-    B_spline_en(){
-        
+    B_spline_en(grid_i, grid_j, grid_k){
+        return this.b_spline_val[grid_i - this.i_lo][grid_j - this.j_lo][grid_k - this.k_lo];
     }
     
-     B_spline_gradiente_en(){
-        
+     B_spline_gradiente_en(grid_i, grid_j, grid_k){
+        return this.b_spline_grad_val[grid_i - this.i_lo][grid_j - this.j_lo][grid_k - this.k_lo];
     }
 }
 
