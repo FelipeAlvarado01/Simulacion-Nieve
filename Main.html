@@ -3,6 +3,7 @@
   <head>
     <title>Simulacion de nieve</title>
       <style>
+      <style>
             html, body { margin: 0; padding: 0; overflow: hidden; }
             #info {
                 position: absolute;
@@ -15,7 +16,7 @@
   </head>
   <body>
 
-  //////////////////////////////////////////////////////////////////////////////////////////
+  
    <!--Librerias de graficacion-->
     <script src="js/three.min.js"></script>
     <script src='js/libs/dat.gui.min.js'></script>
@@ -24,7 +25,6 @@
     <!--Librerias para la simulacion-->
     <script src="Escena.js"></script>
     <script src="Particula.js"></script>
-////////////////////////////////////////////////////////////////////////////////////////////
     
     <script>
       
@@ -39,17 +39,29 @@
         //Creacion de la escena 3D
         creacion();
 
-        //////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
             
         //Pruebas clase particula
         var particula = new Particula(new THREE.Vector3(50,10,15), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,0.1);
 
-        console.log("Posicion x : " + particula.p.x);
-        console.log("Posicion y : " + particula.p.y);
-        console.log("Posicion z : " + particula.p.z);
+        console.log("Posicion x = " + particula.posicion.x);
 
         particula.G_deformacion_E.set(11, 12, 13, 21, 22, 23,31, 32, 33 );
         
+       // particula.val_b_spline[0][0][0] = new THREE.Vector3(5,6,3);
+        //console.log("Prueba array tridimensional = " + particula.val_b_spline[0][0][0].x);
+        
+        
+        
+        particula.val_grad_b_spline[0][0][0] = new THREE.Vector3();
+        particula.val_grad_b_spline[3][3][3] = new THREE.Vector3(5,6,3);
+        
+        console.log("Prueba #1 = " + particula.val_grad_b_spline[0][0][0].x);
+        console.log("Prueba #3 = " + particula.val_grad_b_spline[3][3][3].z);
+        
+        
+        /*particula.val_b_spline[0] = 1.5;
+        console.log("Prueba #1 val = " + particula.val_b_spline[0]);*/
         
 	}
   
