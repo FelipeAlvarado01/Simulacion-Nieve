@@ -2,7 +2,6 @@ class Particula{
 	
 	//Constructor de la clase Particula. Se crean todos los atributos dentro
 	constructor(posicion,velocidad,res, masa,h){
-        
         //Creacion de atributos de la particula
         this.posicion = posicion; //Posicion, recibe un vector de que recibe x,y,z
         this.velocidad = velocidad; //Velocidad, recibe un vector de que recibe x,y,z
@@ -63,7 +62,7 @@ class Particula{
                 for(var dest_k=this.k_lo; des_k<this.k_hi ; des_k++){
                     
                     //vector_particual/h-vector_des
-                    var scaled = particula.posicion.divideScalar(0.1).sub(new THREE.Vector3(dest_i, dest_j, dest_k));
+                    var scaled = this.posicion.divideScalar(this.h).sub(new THREE.Vector3(dest_i, dest_j, dest_k));
                     this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Funcion b_spline proviene de interpolacion.js
                     this.val_grad_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline_grad(scaled, this.h); //Funcion b_spline_grad proviene de interpolacion.js
                     

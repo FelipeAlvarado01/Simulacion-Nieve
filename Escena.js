@@ -1,11 +1,12 @@
 function creacion(){
-   //Creacion de estructura basica de Three.js
+//Creacion de estructura basica de Three.js
 scene = new THREE.Scene();
 aspect = window.innerWidth / window.innerHeight;
 camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
 renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-			
+scene.background =new THREE.Color( 0xFFFFFF );
+
 document.body.appendChild( renderer.domElement );
 controls = new THREE.OrbitControls(camera, renderer.domElement);
 						

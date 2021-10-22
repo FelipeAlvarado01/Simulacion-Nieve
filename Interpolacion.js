@@ -1,3 +1,4 @@
+//Funciones de B-spline
 //Variables de interpolacion
 var NFUNCRESOLUTION = 10000;
 var NFUNCSPACING = 4.0/NFUNCRESOLUTION;
@@ -91,7 +92,15 @@ function b_spline(scaled) {
 }
 
 function b_spline_components(scaled) {
-	return new TREE.Vector3(n_func_memoized(scaled.x), n_func_memoized(scaled.y), n_func_memoized(scaled.z));
+	return new THREE.Vector3(n_func_memoized(scaled.x), n_func_memoized(scaled.y), n_func_memoized(scaled.z));
+}
+
+function b_spline_grad(scaled,h) {
+	var components = b_spline_components(scaled);
+	var dx = components.y * components.z * n_func_derivative_memoized(scaled.x) / h;
+	var dy = components.x * components.z * n_func_derivative_memoized(scaled.y) / h;
+	var dz = components.x * components.y * n_func_derivative_memoized(scaled.z) / h;
+	return new THREE.Vector3(dx, dy , dz);
 }
 
 
