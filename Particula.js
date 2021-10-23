@@ -18,8 +18,8 @@ class Particula{
         this.i_hi;
         this.j_lo;
         this.j_hi;
-        this.z_lo;
-        this.z_hi;
+        this.k_lo;
+        this.k_hi;
         
         //En cuestion se crea un arreglo multidimensional que guarda valores flotantes.
         this.val_b_spline = new Array(4); //Se define array tridimensional
@@ -43,22 +43,24 @@ class Particula{
             }
         }      
 	}
-	
-    //Calculos para la interpolacion b-spline
+	/*
+    Calculos para la interpolacion b-spline
+    los valores de lo y hi se toman de la posicion de la particula
+    */
     Calculos_limites_vencidad(){
        //round es para dejar el numero entero
        this.i_lo = Math.round(Math.max(Math.ceil(this.posicion.x/this.h-2),0));
        this.i_hi = Math.round(Math.min(Math.floor(this.posicion.x/this.h+2) + 1,this.res.x));
        this.j_lo = Math.round(Math.max(Math.ceil(this.posicion.y/this.h-2),0));
        this.j_hi = Math.round(Math.min(Math.floor(this.posicion.y/this.h+2) + 1,this.res.y));
-       this.z_lo = Math.round(Math.max(Math.ceil(this.posicion.z/this.h-2),0));
-       this.z_hi = Math.round(Math.min(Math.floor(this.posicion.z/this.h+2) + 1,this.res.z)); 
+       this.k_lo = Math.round(Math.max(Math.ceil(this.posicion.z/this.h-2),0));
+       this.k_hi = Math.round(Math.min(Math.floor(this.posicion.z/this.h+2) + 1,this.res.z)); 
     }
     
     Calculos_gradiente_b_spline(){
-        for( var dest_i=this.i_lo; des_i<this.i_hi ; des_i++){
-            for(var dest_j=this.j_lo; des_j<this.j_hi ; des_j++){
-                for(var dest_k=this.k_lo; des_k<this.k_hi ; des_k++){ 
+        for( var dest_i=this.i_lo; dest_i<this.i_hi ; dest_i++){
+            for(var dest_j=this.j_lo; dest_j<this.j_hi ; dest_j++){
+                for(var dest_k=this.k_lo; dest_k<this.k_hi ; dest_k++){ 
                     //vector_particual/h-vector_des
                     var scaled = this.posicion.divideScalar(this.h).sub(new THREE.Vector3(dest_i, dest_j, dest_k));
                     this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Funcion b_spline proviene de interpolacion.js

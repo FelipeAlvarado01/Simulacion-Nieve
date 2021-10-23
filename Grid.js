@@ -40,7 +40,6 @@ class Grid{
         Array multidimensional para los nodos
         Se define la grid para realizar los calculos
         **/
-        
         this.nodos = new Array(this.res_x); 
         for(var i=0; i<this.nodos; i++) {
             this.nodos[i] = new Array(this.res_y);
@@ -60,14 +59,40 @@ class Grid{
         } 
         
         for(var i=0;i<this.todas_particulas.length;i++){
-            this.todas_particulas.posicion[i] = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas.posicion,new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z).subScalar(1e-5)));
+            this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas.posicion,new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z).subScalar(1e-5)));
             
-        /*particle->position = glm::max(vec3(0.0), glm::min(particle->position, vec3(dim_x, dim_y, dim_z) - vec3(1e-5)));
-        ivec3 index = glm::floor(particle->position / h);
-
-        // We need to compute the new neighborhood bounds before we try instantiating needed GridNodes in the interpolation radius.
-        particle->compute_neighborhood_bounds();
-        particle->compute_b_spline_grad();*/
+            var index = this.todas_particulas[i].posicion.divideScalar(this.h).floor();
+            
+            this.todas_particulas[i].Calculos_limites_vencidad();
+            this.todas_particulas[i].Calculos_gradiente_b_spline();
+            
+            for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
+                for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
+                    for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
+                        var nodo = this.nodos[dest_i][dest_j][dest_k];
+                        if(nodo == null){
+                            nodo =  new GridNode();
+                            nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k);
+                            this.nodos[dest_i][dest_j][dest_k] ]= nodo;
+                        }
+                    }
+                }
+                
+            }
+            
+            /*for (int dest_i = particle->i_lo; dest_i < particle->i_hi; ++dest_i) {
+                for (int dest_j = particle->j_lo; dest_j < particle->j_hi; ++dest_j) {
+                    for (int dest_k = particle->k_lo; dest_k < particle->k_hi; ++dest_k) {
+                        GridNode* node = nodes[dest_i][dest_j][dest_k];
+                        if (node == NULL) {
+                            node = new GridNode();
+                            node->index = ivec3(dest_i, dest_j, dest_k);
+                            nodes[dest_i][dest_j][dest_k] = node;
+                        }
+                        nodes_in_use.insert(node);
+                    }
+                }
+            }*/
         }
     }
     
@@ -84,7 +109,6 @@ class Grid{
     //Metodos de Grid
     simular(delta_t, aceleracion_externa, colision_objetos, parametros){
        this.steps_since_node_reset++; 
-        
         if (this.steps_since_node_reset > this.reset_time / delta_t) {
             pruneUnusedNodes();
             this.steps_since_node_reset = 0;
