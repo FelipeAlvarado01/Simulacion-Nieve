@@ -60,7 +60,7 @@ class Grid{
         } 
         
         for(var i=0;i<this.todas_particulas.length;i++){
-            this.todas_particulas.posicion[i] = Math.max(new THREE.Vector3(), Math.min(this.todas_particulas.posicion,new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z).subScalar(1e-5)));
+            this.todas_particulas.posicion[i] = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas.posicion,new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z).subScalar(1e-5)));
             
         /*particle->position = glm::max(vec3(0.0), glm::min(particle->position, vec3(dim_x, dim_y, dim_z) - vec3(1e-5)));
         ivec3 index = glm::floor(particle->position / h);
