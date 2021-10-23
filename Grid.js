@@ -7,19 +7,15 @@ class GridNode{
         this.velocidad;		// interpolated velocity
         this.siguiente_velocidad; // for part 4, 5, 6
         this.fuerza;
-        
         /*
             Aquí es donde se guardaran los objetos pariculas
             Array de tamaño dinamico (no definido);
         */
-        this.particulas = new Array(); 
-        
-        
+        this.particulas = new Array();    
     }
 }
 
 class Grid{
-    
     constructor(res_x,res_y,res_z,h){  
        //Atributos y inicializacion    
        this.res_x = res_x;
@@ -55,9 +51,24 @@ class Grid{
     }
     
     resetearGrid(){
-       for(var i=0;i<this.nodos_en_uso.length;i++){
-           this.nodos_en_uso[i]
-       } 
+        for(var i=0;i<this.nodos_en_uso.length;i++){
+           this.nodos_en_uso[i].masa = 0
+           this.nodos_en_uso[i].velocidad = new THREE.Vector3();
+           this.nodos_en_uso[i].siguiente_velocidad = new THREE.Vector3();
+           this.nodos_en_uso[i].fuerza = new THREE.Vector3();
+           this.nodos_en_uso[i].particulas.length = 0 //Se limpia el array de particula
+        } 
+        
+        for(var i=0;i<this.todas_particulas.length;i++){
+            this.todas_particulas.posicion[i] = Math.max(new THREE.Vector3(), Math.min(this.todas_particulas.posicion,new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z).subScalar(1e-5)));
+            
+        /*particle->position = glm::max(vec3(0.0), glm::min(particle->position, vec3(dim_x, dim_y, dim_z) - vec3(1e-5)));
+        ivec3 index = glm::floor(particle->position / h);
+
+        // We need to compute the new neighborhood bounds before we try instantiating needed GridNodes in the interpolation radius.
+        particle->compute_neighborhood_bounds();
+        particle->compute_b_spline_grad();*/
+        }
     }
     
     //Elimina los nodos no usados

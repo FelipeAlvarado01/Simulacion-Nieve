@@ -55,7 +55,7 @@
         
         //Intento para eliminar un elemento desde el index
         
-        grid.nodos_en_uso.pop(particula);
+        //grid.nodos_en_uso.pop(particula);
         //grid.nodos_en_uso.pop(particula2);
         
         console.log("Posicion particula 1 : "+ grid.nodos_en_uso[0].posicion.x);
@@ -67,6 +67,12 @@
         
         grid.nodos_en_uso.length = 0
         console.log("tam nodos en uso = "+ grid.nodos_en_uso.length); */
+        
+        var vec1 = new THREE.Vector3(5,5,5);
+        //var result = vec1.sub(new THREE.Vector3(1e-5,1e-5,1e-5));
+        var result = vec1.subScalar(1e-5);
+        var minimo = Math.min(result,vec1)
+        console.log("resultados vector mayor = " + minimo.x);
     
 	}
   

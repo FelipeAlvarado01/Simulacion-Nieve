@@ -31,7 +31,7 @@ function sgn(x) {
 	return r;
 }
 
-function N_func(x) { //Funcion N(x)
+function N_func(x) {//Funcion N(x)
 	var abs_x = Math.abs(x);
 	if (abs_x < 1) {
 		return 0.5 * abs_x * abs_x * abs_x - x * x + 2.0 / 3.0;

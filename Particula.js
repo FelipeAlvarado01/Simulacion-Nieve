@@ -1,5 +1,4 @@
 class Particula{
-	
 	//Constructor de la clase Particula. Se crean todos los atributos dentro
 	constructor(posicion,velocidad,res, masa,h){
         //Creacion de atributos de la particula
@@ -22,7 +21,7 @@ class Particula{
         this.z_lo;
         this.z_hi;
         
-        //En cuestion es un arreglo multidimensional que guarda valores flotantes.
+        //En cuestion se crea un arreglo multidimensional que guarda valores flotantes.
         this.val_b_spline = new Array(4); //Se define array tridimensional
         //Vamos a recorrerlo para meter en cada posición un array de 4
         for(var i=0; i<this.val_b_spline.length; i++) {
@@ -59,13 +58,11 @@ class Particula{
     Calculos_gradiente_b_spline(){
         for( var dest_i=this.i_lo; des_i<this.i_hi ; des_i++){
             for(var dest_j=this.j_lo; des_j<this.j_hi ; des_j++){
-                for(var dest_k=this.k_lo; des_k<this.k_hi ; des_k++){
-                    
+                for(var dest_k=this.k_lo; des_k<this.k_hi ; des_k++){ 
                     //vector_particual/h-vector_des
                     var scaled = this.posicion.divideScalar(this.h).sub(new THREE.Vector3(dest_i, dest_j, dest_k));
                     this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Funcion b_spline proviene de interpolacion.js
-                    this.val_grad_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline_grad(scaled, this.h); //Funcion b_spline_grad proviene de interpolacion.js
-                    
+                    this.val_grad_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline_grad(scaled, this.h); //Funcion b_spline_grad proviene de interpolacion.js  
                 }
             }
         }
