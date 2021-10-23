@@ -1,14 +1,20 @@
 
 class GridNode{
-    
+    //Atributos del nodo
     constructor(){
-        this.index;	// the {i, j, k} index of the grid node
+        this.index;	// the {i, j, k} index of the grid node es un vector
         this.masa;			// interpolated mass
         this.velocidad;		// interpolated velocity
         this.siguiente_velocidad; // for part 4, 5, 6
         this.fuerza;
         
-        this.particulas = new Array(); //Array de tamaño dinamico (no definido);
+        /*
+            Aquí es donde se guardaran los objetos pariculas
+            Array de tamaño dinamico (no definido);
+        */
+        this.particulas = new Array(); 
+        
+        
     }
 }
 
@@ -28,9 +34,11 @@ class Grid{
         
        this.primer_paso = true; 
        this.steps_since_node_reset = 0;
+       this.reset_time = 0.1; 
         
        this.todas_particulas = new Array();
-       this.Nodos_en_uso = new Set();
+       this.nodos_en_uso = new Array();
+       //this.nodos_en_uso = new Map();
         
         /**
         Array multidimensional para los nodos
@@ -46,10 +54,59 @@ class Grid{
         }
     }
     
-    //Metodos de Grid
-    simular(delta_t, aceleracion_externa, colision_objetos, parametros){
-        
-        
+    resetearGrid(){
+       for(var i=0;i<this.nodos_en_uso.length;i++){
+           this.nodos_en_uso[i]
+       } 
     }
     
+    //Elimina los nodos no usados
+    pruneUnusedNodes() { 
+        for (var i=0;i<this.nodos_en_uso.length;i++) {
+            var index = this.nodos_en_uso[i].index;
+            this.nodos[index.x][index.y][index.z] = null;
+            this.nodos_en_uso[i] = null; //Elimina los elementos del array 
+        }
+        this.nodos_en_uso.length = 0; //Se limpia el array
+    }
+
+    //Metodos de Grid
+    simular(delta_t, aceleracion_externa, colision_objetos, parametros){
+       this.steps_since_node_reset++; 
+        
+        if (this.steps_since_node_reset > this.reset_time / delta_t) {
+            pruneUnusedNodes();
+            this.steps_since_node_reset = 0;
+        }
+    }   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

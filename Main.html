@@ -23,6 +23,7 @@
     
     <!--Librerias para la simulacion-->
     <script src="Escena.js"></script>
+    <script src="ParametrosFisicos.js"></script>
     <script src="Interpolacion.js"></script>
     <script src="Particula.js"></script>
     <script src="Grid.js"></script>
@@ -40,18 +41,33 @@
         //Creacion de la escena 3D
         creacion();
 
-        ///////////////////////////////////////////////////////////
-            
+        ///////////////////////////////////////////////////////////  
         //Pruebas clase particula
-        var particula = new Particula(new THREE.Vector3(1,1,1), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,0.1);
+        var particula = new Particula(new THREE.Vector3(50,1,1), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,0.1);
+        var particula2 = new Particula(new THREE.Vector3(1,1,1), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,0.1);
         
+        var grid = new Grid(5,5,5,0.1);
         
-        var grid = new Grid();
-        var tam = particula.val_b_spline.length;
-        console.log("tam array = " + tam);
-
+        grid.nodos_en_uso[0] = particula;
+        grid.nodos_en_uso.push(particula2);
         
+        console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);
         
+        //Intento para eliminar un elemento desde el index
+        
+        grid.nodos_en_uso.pop(particula);
+        //grid.nodos_en_uso.pop(particula2);
+        
+        console.log("Posicion particula 1 : "+ grid.nodos_en_uso[0].posicion.x);
+        console.log("Posicion particula 2 : "+ grid.nodos_en_uso[1].posicion.x);
+        
+        console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);
+        
+        /*console.log("LImpiar el array");
+        
+        grid.nodos_en_uso.length = 0
+        console.log("tam nodos en uso = "+ grid.nodos_en_uso.length); */
+    
 	}
   
 	function animate() {
