@@ -7,11 +7,14 @@ class Particula{
         this.res = res;
         this.masa = masa;	
         this.h = h;
+        
+        this.volumen;  
+        this.cbrt_volumen;
 
         //Creacion de atributos para los calculos
         this.G_deformacion_E = new THREE.Matrix3();
         this.G_deformacion_P = new THREE.Matrix3();
-        this.F_Ep = new THREE.Matrix3(); //Fuerza eslastica de la particula
+        this.F_hat_Ep = new THREE.Matrix3(); //Fuerza eslastica de la particula
         
         //Creacion de atributos para la B-spline
         this.i_lo;

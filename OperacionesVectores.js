@@ -32,3 +32,19 @@ function minimoVec3(vector1,vector2){
         return vector1; 
     }
 }
+
+function sumaVec3(vector1,vector2){
+    var sum_x = vector1.x + vector2.x;
+    var sum_y = vector1.y + vector2.y;
+    var sum_z = vector1.z + vector2.z;
+    
+    return new THREE.Vector3(sum_x,sum_y,sum_z);  
+}
+
+function restaVec3(vector1,vector2){
+    var res_x = vector1.x - vector2.x;
+    var res_y = vector1.y - vector2.y;
+    var res_z = vector1.z - vector2.z;
+    
+    return new THREE.Vector3(res_x,res_y,res_z); 
+}

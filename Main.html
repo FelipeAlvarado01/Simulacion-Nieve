@@ -54,41 +54,19 @@
         
         console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);
         
-        //Intento para eliminar un elemento desde el index
-        
-        //grid.nodos_en_uso.pop(particula);
-        //grid.nodos_en_uso.pop(particula2);
-        
-        /*console.log("Posicion particula 1 : "+ grid.nodos_en_uso[0].posicion.x);
-        console.log("Posicion particula 2 : "+ grid.nodos_en_uso[1].posicion.x);
-        
-        console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);*/
-        
-        /*console.log("LImpiar el array");
-        
-        grid.nodos_en_uso.length = 0
-        console.log("tam nodos en uso = "+ grid.nodos_en_uso.length); */
-        
         var vec1 = new THREE.Vector3(5,5,5);
         //var result = vec1.sub(new THREE.Vector3(1e-5,1e-5,1e-5));
-        var vec2 = new THREE.Vector3(3,3,3);
+        var velocidad = new THREE.Vector3(3,9,3);
+        var vec2=velocidad.multiplyScalar(3 * 4); 
         
-        //console.log("vector maximo = "+maximoVec3(vec1,vec2).x);
-        //console.log("vector minimo = "+minimoVec3(vec1,vec2).x);
+
         
-        /*var index = vec1.divideScalar(0.9).floor();
-        console.log("index = "+index.x);
+        var r = sumaVec3(particula.velocidad,vec2);
         
-        particula.Calculos_limites_vencidad();*/
-        
-        grid.nodos_en_uso[0].Calculos_limites_vencidad();
-        //grid.nodos_en_uso[0].Calculos_gradiente_b_spline();
-        
-        console.log("i_lo valor = "+grid.nodos_en_uso[0].i_lo);
-        console.log("i_hi valor = "+grid.nodos_en_uso[0].i_hi);
+        console.log("resultado suma de vectores = " + r.y);
         
         
-    
+
 	}
   
 	function animate() {
