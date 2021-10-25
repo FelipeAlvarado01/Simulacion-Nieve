@@ -42,6 +42,7 @@ class Grid{
         /**
         Array multidimensional para los nodos
         Se define la grid para realizar los calculos
+        Guardara valores del objeto GridNodo
         **/
         this.nodos = new Array(this.res_x); 
         for(var i=0; i<this.nodos; i++) {
@@ -73,18 +74,19 @@ class Grid{
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
+                        
                         var nodo = this.nodos[dest_i][dest_j][dest_k];
                         if(nodo == null){
-                            nodo =  new GridNode();
-                            nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k);
-                            this.nodos[dest_i][dest_j][dest_k] = nodo;
+                           nodo =  new GridNode();
+                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k);
+                           this.nodos[dest_i][dest_j][dest_k] = nodo;
                         }
                         this.nodos_en_uso.push(nodo);
                     }
                 }
             }
-            var nodo = this.nodos[index.x][index.y][index.z];
-            nodo.particulas.push(this.todas_particulas[i]);
+            var nodo = this.nodos[index.x][index.y][index.z]; //Es una variable que almacenara el objeto NodoGrid
+            nodo.particulas.push(this.todas_particulas[i]); //Ingresa a su atributo particulas
         }
     }
     
@@ -110,6 +112,8 @@ class Grid{
         particulaAlaGrid()  //Paso 1
     }   
     
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     particulaAlaGrid(){ //Primer paso - Tranferir masa y velocidad a la grid
         for(var i=0;i<this.todas_particulas.length;i++){
             
@@ -119,7 +123,7 @@ class Grid{
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
-                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);
+                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);//Es un valor flotante
                         this.nodos[dest_i][dest_j][dest_k].masa += peso * this.todas_particulas[i].masa; //m = sumatoria mi*Wi
                         
                         var resultMul = this.todas_particulas[i].velocidad.multiplyScalar(peso * this.todas_particulas[i].masa);  
@@ -132,12 +136,14 @@ class Grid{
         
         for (var i=0;i<this.nodos_en_uso.length;i++) {
             if (this.nodos_en_uso[i].masa > 0) {
-               this.nodos_en_uso[i].velocidad = this.nodos_en_uso[i].velocidad.divideScalar(this.nodos_en_uso[i].masa);
+                this.nodos_en_uso[i].velocidad = this.nodos_en_uso[i].velocidad.divideScalar(this.nodos_en_uso[i].masa);
             }
         }       
     } 
     
-    calcular_Volumenes_Densidad_de_particula(){
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    calcular_Volumenes_Densidad_de_particula(){ //Segundo paso - Calculo del volumen y velocidad de la particula
         var h3 = Math.pow(this.h,3);
         
         for(var i=0;i<this.todas_particulas.length;i++){
@@ -148,8 +154,8 @@ class Grid{
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
-                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);   
-                        densidad = peso * this.nodos[dest_i][dest_j][dest_k].masa; //mi*Wi
+                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);   //Valores flotates
+                        densidad = peso * this.nodos[dest_i][dest_j][dest_k].masa; //mi*Wi 
                         
                     }
                 }
@@ -162,8 +168,34 @@ class Grid{
         }
     }
     
-    calcular_F_hat_Ep(){
-        
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    //Tecer paso - Calculos de fuerza sobre la particula
+    calcular_F_hat_Ep(delta_t){ //Calculos de fuerza
+        for(var i=0;i<this.todas_particulas.length;i++){
+            
+            var h3 = Math.pow(this.h,3);
+            
+            for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
+                
+                var sum = new THREE.Matrix3();
+                sum.set(0,0,0,0,0,0,0,0,0);
+                
+                for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
+                    for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
+                        
+                        var grad_peso = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k);
+                        var velocidad = this.nodos[dest_i][dest_j][dest_k].velocidad;
+                        
+                        
+                        /*vec3 weight_grad = particle->b_spline_grad_at(dest_i, dest_j, dest_k);
+                        vec3 velocity = nodes[dest_i][dest_j][dest_k]->velocity;
+                        sum += delta_t * outerProduct(velocity, weight_grad);*/
+                        
+                    }
+                }
+            }   
+        } 
     }
 }
 

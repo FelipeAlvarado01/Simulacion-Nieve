@@ -35,7 +35,7 @@ class Particula{
             }
         }  
         
-        //Este nuevo array guardara vectores de 3 posiciones
+        //Este nuevo array guardara vectores de 3 posiciones, se comportara como una matriz  que guardara vectores3
         this.val_grad_b_spline = new Array(4); //Se define array tridimensional
         //Vamos a recorrerlo para meter en cada posición un array de 4
         for(var i=0; i <this.val_grad_b_spline.length; i++) {
@@ -74,11 +74,11 @@ class Particula{
     }
     
     B_spline_en(grid_i, grid_j, grid_k){
-        return this.b_spline_val[grid_i - this.i_lo][grid_j - this.j_lo][grid_k - this.k_lo];
+        return this.val_b_spline[grid_i - this.i_lo][grid_j - this.j_lo][grid_k - this.k_lo];
     }
     
-     B_spline_gradiente_en(grid_i, grid_j, grid_k){
-        return this.b_spline_grad_val[grid_i - this.i_lo][grid_j - this.j_lo][grid_k - this.k_lo];
+    B_spline_gradiente_en(grid_i, grid_j, grid_k){
+        return this.val_grad_b_spline[grid_i - this.i_lo][grid_j - this.j_lo][grid_k - this.k_lo];
     }
 }
 

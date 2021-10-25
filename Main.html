@@ -57,7 +57,7 @@
         var vec1 = new THREE.Vector3(5,5,5);
         //var result = vec1.sub(new THREE.Vector3(1e-5,1e-5,1e-5));
         var velocidad = new THREE.Vector3(3,9,3);
-        var vec2=velocidad.multiplyScalar(3 * 4); 
+        var vec2 = velocidad.multiplyScalar(3 * 4); 
         
 
         
@@ -66,7 +66,13 @@
         console.log("resultado suma de vectores = " + r.y);
         
         
-
+        const m = new THREE.Matrix3();
+        const n= m.elements;
+        console.log("Posicion de index = " + n[4]);
+        
+        m.set(0,0,0,0,0,0,0,0,0);
+        
+        console.log("Posicion de index = " + n[4]);
 	}
   
 	function animate() {
