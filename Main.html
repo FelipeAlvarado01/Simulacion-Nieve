@@ -23,7 +23,8 @@
     
     <!--Librerias para la simulacion-->
     <script src="Escena.js"></script>
-    <script src="OperacionesVectores.js"></script>
+    <script src="OperacionesVectoresMatrices.js"></script>
+    <script src="Fuerzas.js"></script>
     <script src="ParametrosFisicos.js"></script>
     <script src="Interpolacion.js"></script>
     <script src="Particula.js"></script>
@@ -52,27 +53,37 @@
         grid.nodos_en_uso[0] = particula;
         grid.nodos_en_uso.push(particula2);
         
-        console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);
+        //console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);
         
         var vec1 = new THREE.Vector3(5,5,5);
-        //var result = vec1.sub(new THREE.Vector3(1e-5,1e-5,1e-5));
-        var velocidad = new THREE.Vector3(3,9,3);
-        var vec2 = velocidad.multiplyScalar(3 * 4); 
+        var vec2 = new THREE.Vector3(3,9,3);
+ 
+        var m = new THREE.Matrix3();
+        var m2 = new THREE.Matrix3();
+        var mr = new THREE.Matrix3();
+        var n = m.elements;
         
-
+        m.set(5,0,0,
+              1,0,0,
+              6,0,0);
         
-        var r = sumaVec3(particula.velocidad,vec2);
+        m2.set(4,3,2,
+               0,0,0,
+               0,0,0);
         
-        console.log("resultado suma de vectores = " + r.y);
         
+        mr.multiplyMatrices(m,m2);
         
-        const m = new THREE.Matrix3();
-        const n= m.elements;
-        console.log("Posicion de index = " + n[4]);
+        var mre = mr.elements; 
+        console.log("Matriz mul = " + mre);
         
-        m.set(0,0,0,0,0,0,0,0,0);
+        console.log("---------------------------");
         
-        console.log("Posicion de index = " + n[4]);
+        var mr2 = mulMatrizOfVectores3(vec1,vec2).multiplyScalar(2);
+        var mre2 = mr2.elements;
+        
+        console.log("Matriz multiplicada = "+ mre2);
+ 
 	}
   
 	function animate() {

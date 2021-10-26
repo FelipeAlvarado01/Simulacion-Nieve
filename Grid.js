@@ -144,6 +144,7 @@ class Grid{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     calcular_Volumenes_Densidad_de_particula(){ //Segundo paso - Calculo del volumen y velocidad de la particula
+        
         var h3 = Math.pow(this.h,3);
         
         for(var i=0;i<this.todas_particulas.length;i++){
@@ -163,8 +164,7 @@ class Grid{
             
         densidad/=h3;//ρ0p = sumatoria mi*Wi/h^3
         this.todas_particulas[i].volumen = this.todas_particulas[i].masa/densidad; //V0p = mp/ρ0p.
-        this.todas_particulas[i].cbrt_volumen = Math.cbrt(this.todas_particulas[i].volumen); 
-            
+        this.todas_particulas[i].cbrt_volumen = Math.cbrt(this.todas_particulas[i].volumen);    
         }
     }
     
@@ -172,31 +172,57 @@ class Grid{
     
     //Tecer paso - Calculos de fuerza sobre la particula
     calcular_F_hat_Ep(delta_t){ //Calculos de fuerza
+        
+        //var h3 = Math.pow(this.h,3);
+        
         for(var i=0;i<this.todas_particulas.length;i++){
             
-            var h3 = Math.pow(this.h,3);
-            
+            var sum = new THREE.Matrix3();
+            sum.set(0,0,0,0,0,0,0,0,0);
+                
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
-                
-                var sum = new THREE.Matrix3();
-                sum.set(0,0,0,0,0,0,0,0,0);
-                
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
-                        var grad_peso = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k);
+                        var grad_peso = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k); //Es un vector3
                         var velocidad = this.nodos[dest_i][dest_j][dest_k].velocidad;
                         
-                        
-                        /*vec3 weight_grad = particle->b_spline_grad_at(dest_i, dest_j, dest_k);
-                        vec3 velocity = nodes[dest_i][dest_j][dest_k]->velocity;
-                        sum += delta_t * outerProduct(velocity, weight_grad);*/
+                        var resultMul = mulMatrizOfVectores3(velocidad,grad_peso).multiplyScalar(delta_t);
+                            
+                        sum = sumMatriz3(sum,resultMul); 
+                    }
+                }
+            }
+            
+            var identidad = new THREE.Matrix3(); //Se inicializa como una matriz identidad (unos en su diagonal)
+            this.todas_particulas[i].F_hat_Ep = sumMatriz3(identidad,sum).multiply(this.todas_particulas[i].G_deformacion_E);
+        } 
+    }
+    
+    calculos_fuerza_grid(mu_0, lambda_0, xi){
+        
+        var h3 = Math.pow(this.h,3);
+        
+        for(var i=0;i<this.todas_particulas.length;i++){
+            var volumen = this.todas_particulas[i].volumen;
+            var sigma_p =  psi_derivada(mu_0,lambda_0,xi,this.todas_particulas[i]);
+            
+            for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
+                for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
+                    for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
                     }
                 }
-            }   
+            }
+            
+            var identidad = new THREE.Matrix3(); //Se inicializa como una matriz identidad (unos en su diagonal)
+            this.todas_particulas[i].F_hat_Ep = sumMatriz3(identidad,sum).multiply(this.todas_particulas[i].G_deformacion_E);
         } 
     }
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    
 }
 
 
