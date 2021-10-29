@@ -21,6 +21,8 @@
     <script src='js/libs/dat.gui.min.js'></script>
     <script src="js/controls/OrbitControls.js"></script>
     
+    <!--Librerias algebraicas para matrices-->
+    <script src="https://unpkg.com/svd-js" type="application/javascript"></script> 
     <!--Librerias para la simulacion-->
     <script src="Escena.js"></script>
     <script src="OperacionesVectoresMatrices.js"></script>
@@ -74,16 +76,38 @@
         
         mr.multiplyMatrices(m,m2);
         
+         /*var m2e = m2.elements;
+        console.log("Matriz mul = " + m2e);
+        
+        console.log("---------------------------");
+        
         var mre = mr.elements; 
         console.log("Matriz mul = " + mre);
         
         console.log("---------------------------");
         
-        var mr2 = mulMatrizOfVectores3(vec1,vec2).multiplyScalar(2);
-        var mre2 = mr2.elements;
+        var vr2 = mulMatrizOfVectores3(vec1,vec2);
+        var vre2 = vr2.elements;
+        console.log("Vector multiplicado = "+ vre2);
         
-        console.log("Matriz multiplicada = "+ mre2);
- 
+        console.log("---------------------------");
+        
+        var mr2 = sumMatriz3(m,m2);
+        var mre2 = mr2.elements;
+        console.log("Matriz sumada = "+ mre2);*/
+        
+        //Prueba SVD
+        const a =[[0.68,0.597],
+                  [-0.211,0.823],
+                  [0.566,-0.605]
+                 ];
+        
+        const { u, v, q } = SVDJS.SVD(a)
+        console.log(u);
+        console.log(v);
+        console.log(q);
+        
+        console.log("entrar a un elemento = "+ u[0][0]);
 	}
   
 	function animate() {

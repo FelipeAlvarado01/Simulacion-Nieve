@@ -187,8 +187,7 @@ class Grid{
                         var grad_peso = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k); //Es un vector3
                         var velocidad = this.nodos[dest_i][dest_j][dest_k].velocidad;
                         
-                        var resultMul = mulMatrizOfVectores3(velocidad,grad_peso).multiplyScalar(delta_t);
-                            
+                        var resultMul = mulMatrizOfVectores3(velocidad,grad_peso).multiplyScalar(delta_t); //outerProduct en glm (c++)   
                         sum = sumMatriz3(sum,resultMul); 
                     }
                 }
@@ -204,6 +203,7 @@ class Grid{
         var h3 = Math.pow(this.h,3);
         
         for(var i=0;i<this.todas_particulas.length;i++){
+            
             var volumen = this.todas_particulas[i].volumen;
             var sigma_p =  psi_derivada(mu_0,lambda_0,xi,this.todas_particulas[i]);
             
