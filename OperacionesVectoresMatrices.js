@@ -82,6 +82,16 @@ function sumMatriz3(matriz_1,matriz_2){
                      matE_1[2]+matE_2[2],matE_1[5]+matE_2[5],matE_1[8]+matE_2[8]);
 }
 
+function restMatriz3(matriz_1,matriz_2){
+    var matE_1 = matriz_1.elements;
+    var matE_2 = matriz_2.elements;
+    var matResult = new THREE.Matrix3();
+    
+    return matResult.set(matE_1[0]-matE_2[0],matE_1[3]-matE_2[3],matE_1[6]-matE_2[6],
+                         matE_1[1]-matE_2[1],matE_1[4]-matE_2[4],matE_1[7]-matE_2[7],
+                         matE_1[2]-matE_2[2],matE_1[5]-matE_2[5],matE_1[8]-matE_2[8]);
+}
+
 
 
 

@@ -22,7 +22,9 @@
     <script src="js/controls/OrbitControls.js"></script>
     
     <!--Librerias algebraicas para matrices-->
-    <script src="https://unpkg.com/svd-js" type="application/javascript"></script> 
+    <script src="https://unpkg.com/svd-js" type="application/javascript"></script>
+    <script src="https://unpkg.com/lightmatrix/dist/lightmatrix.js"></script>
+     
     <!--Librerias para la simulacion-->
     <script src="Escena.js"></script>
     <script src="OperacionesVectoresMatrices.js"></script>
@@ -97,17 +99,28 @@
         console.log("Matriz sumada = "+ mre2);*/
         
         //Prueba SVD
-        const a =[[0.68,0.597],
-                  [-0.211,0.823],
-                  [0.566,-0.605]
+        const a =[[1,2,2],
+                  [3,4,5],
+                  [6,7,8]
                  ];
         
-        const { u, v, q } = SVDJS.SVD(a)
+        var { u, v, q } = SVDJS.SVD(a)
         console.log(u);
         console.log(v);
         console.log(q);
         
-        console.log("entrar a un elemento = "+ u[0][0]);
+        var adjV = lightmatrix.adjoint(v);
+        var MateResult =lightmatrix.product(u, adjV);
+        console.log("Matriz adjunta de V: "+lightmatrix.adjoint(v));
+        console.log("Matriz resultante U*V: "+lightmatrix.product(u, adjV));
+        
+        for(i=0;i<3;i++){
+            for(j=0;j<3;j++){
+                console.log("Elemento en la pisicion "+i+"-"+j+" : "+ a[i][j]);
+            }
+        }
+        
+        
 	}
   
 	function animate() {
