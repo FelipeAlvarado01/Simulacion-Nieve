@@ -19,9 +19,10 @@ function svdjs_a_three(F){
     
 }
 
-function transpose_inverse(F){
+function transponer_inversa(F){
     var F_svd = three_a_svdjs(F);
     var R = lightmatrix.inverse(lightmatrix.transpose(F_svd));
+    
     return svdjs_a_three(R);
 }
 
@@ -40,22 +41,16 @@ function lame_mu(mu_0, xi, J_p){
 }
 
 function lame_lambda(lambda_0, xi, J_p){
-    return lambda_0 * Math.exp(xi * (1 - J_p))* (J_e - 1) * J_e;
+    return lambda_0 * Math.exp(xi * (1 - J_p)) * (J_e - 1) * J_e;
 }
 
 function psi_derivada(mu_0,lambda_0,xi,particula){
     var J_p = particula.G_deformacion_P.determinant();
     var J_e = particula.F_hat_Ep.determinant();
     var R_E = polar_R(particula.F_hat_Ep);
-    restaVec3(particula.F_hat_Ep,R_E).multiplyScalar(lame_mu(mu_0, xi, J_p))//matriz 3x3
-    + 
     
-     transpose_inverse(F).multiplyScalar(lame_lambda(lambda_0, xi, J_p));
-    return  
-    /*float J_p = determinant(particle->deformation_grad_P);
-	float J_e = determinant(particle->F_hat_Ep);
-	glm::mat3 R_E = polar_R(particle->F_hat_Ep);
-	return 2 * lame_mu(mu_0, xi, J_p) * (particle->F_hat_Ep - R_E) + lame_lambda(lambda_0, xi, J_p) * (J_e - 1) * J_e * inverse(transpose(particle->F_hat_Ep));*/
+    return sumMatriz3(restaVec3(particula.F_hat_Ep,R_E).multiplyScalar(lame_mu(mu_0, xi, J_p)),transpose_inverse(particula.F_hat_Ep).multiplyScalar(lame_lambda(lambda_0, xi, J_p)));  
+	//return 2 * lame_mu(mu_0, xi, J_p) * (particle->F_hat_Ep - R_E) + lame_lambda(lambda_0, xi, J_p) * (J_e - 1) * J_e * inverse(transpose(particle->F_hat_Ep));*/
 }
     
  

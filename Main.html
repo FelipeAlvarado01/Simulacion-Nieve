@@ -33,6 +33,7 @@
     <script src="Interpolacion.js"></script>
     <script src="Particula.js"></script>
     <script src="Grid.js"></script>
+    <script src="Simulacion.js"></script>
     
     <script>
       
@@ -67,9 +68,9 @@
         var mr = new THREE.Matrix3();
         var n = m.elements;
         
-        m.set(5,0,0,
-              1,0,0,
-              6,0,0);
+        m.set(5,5,8,
+              1,1,7,
+              6,4,4);
         
         m2.set(4,3,2,
                0,0,0,
@@ -77,26 +78,6 @@
         
         
         mr.multiplyMatrices(m,m2);
-        
-         /*var m2e = m2.elements;
-        console.log("Matriz mul = " + m2e);
-        
-        console.log("---------------------------");
-        
-        var mre = mr.elements; 
-        console.log("Matriz mul = " + mre);
-        
-        console.log("---------------------------");
-        
-        var vr2 = mulMatrizOfVectores3(vec1,vec2);
-        var vre2 = vr2.elements;
-        console.log("Vector multiplicado = "+ vre2);
-        
-        console.log("---------------------------");
-        
-        var mr2 = sumMatriz3(m,m2);
-        var mre2 = mr2.elements;
-        console.log("Matriz sumada = "+ mre2);*/
         
         //Prueba SVD
         const a =[[1,2,2],
@@ -120,6 +101,7 @@
             }
         }
         
+        transponer_inversa(m);
         
 	}
   
