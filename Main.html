@@ -60,24 +60,30 @@
         
         //console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);
         
-        var vec1 = new THREE.Vector3(5,5,5);
+        var vec1 = new THREE.Vector3(3,5,4);
         var vec2 = new THREE.Vector3(3,9,3);
+        var sumVec = vec1+vec2;
+        console.log("suma de vectores: "+sumVec.x);
  
         var m = new THREE.Matrix3();
-        var m2 = new THREE.Matrix3();
+        var m2 = new THREE.Matrix3(0);
         var mr = new THREE.Matrix3();
-        var n = m.elements;
+        m2.set(0);
+        var n = m2.elements;
         
-        m.set(5,5,8,
-              1,1,7,
-              6,4,4);
+        m.set(1,2,3,
+              4,5,6,
+              7,8,9);
         
-        m2.set(4,3,2,
-               0,0,0,
-               0,0,0);
+
+        var rmulvecxmat = mulVector3Matriz3(vec1,m);
+        console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.x);
+        console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.y);
+        console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.z);
+        console.log("Mostrar matriz = " + n);
         
         
-        mr.multiplyMatrices(m,m2);
+        /*mr.multiplyMatrices(m,m2);
         
         //Prueba SVD
         const a =[[1,2,2],
@@ -101,7 +107,7 @@
             }
         }
         
-        transponer_inversa(m);
+        transponer_inversa(m);*/
         
 	}
   

@@ -35,7 +35,7 @@ class Particula{
             }
         }  
         
-        //Este nuevo array guardara vectores de 3 posiciones, se comportara como una matriz  que guardara vectores3
+        //Este nuevo array guardara vectores de 3 posiciones, Array se comportara como una matriz  que guardara vectores3
         this.val_grad_b_spline = new Array(4); //Se define array tridimensional
         //Vamos a recorrerlo para meter en cada posición un array de 4
         for(var i=0; i <this.val_grad_b_spline.length; i++) {

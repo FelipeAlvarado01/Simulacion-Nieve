@@ -49,7 +49,7 @@ function psi_derivada(mu_0,lambda_0,xi,particula){
     var J_e = particula.F_hat_Ep.determinant();
     var R_E = polar_R(particula.F_hat_Ep);
     
-    return sumMatriz3(restaVec3(particula.F_hat_Ep,R_E).multiplyScalar(lame_mu(mu_0, xi, J_p)),transpose_inverse(particula.F_hat_Ep).multiplyScalar(lame_lambda(lambda_0, xi, J_p)));  
+    return sumMatriz3(restMatriz3(particula.F_hat_Ep,R_E).multiplyScalar(lame_mu(mu_0, xi, J_p)),transpose_inverse(particula.F_hat_Ep).multiplyScalar(lame_lambda(lambda_0, xi, J_p)));  
 	//return 2 * lame_mu(mu_0, xi, J_p) * (particle->F_hat_Ep - R_E) + lame_lambda(lambda_0, xi, J_p) * (J_e - 1) * J_e * inverse(transpose(particle->F_hat_Ep));*/
 }
     

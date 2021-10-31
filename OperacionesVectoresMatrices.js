@@ -53,8 +53,10 @@ function restaVec3(vector_1,vector_2){
 
 /*
     A partir de un dos vectores multiplicarlos, 
-    cambiando un vector fila por un vector columna 
+    cambiando el primer vector fila por un vector columna
 */
+
+
 function mulMatrizOfVectores3(vector_1,vector_2){ 
     var mat_1 = new THREE.Matrix3();
     var mat_2 = new THREE.Matrix3();
@@ -70,6 +72,15 @@ function mulMatrizOfVectores3(vector_1,vector_2){
               0,0,0);
     
     return matResult.multiplyMatrices(mat_1,mat_2);  
+}
+
+function mulVector3Matriz3(vector,matriz){
+    var matE = matriz.elements;
+    var comp_x = vector.x * matE[0] + vector.y * matE[1] + vector.z * matE[2];
+    var comp_y = vector.x * matE[3] + vector.y * matE[4] + vector.z * matE[5];
+    var comp_z = vector.x * matE[6] + vector.y * matE[7] + vector.z * matE[8];
+    return new THREE.Vector3(comp_x,comp_y,comp_z);
+    
 }
 
 function sumMatriz3(matriz_1,matriz_2){
