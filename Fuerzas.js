@@ -19,6 +19,14 @@ function svdjs_a_three(F){
     
 }
 
+function svdjs_a_threeVector3(F){
+    var F_three = new THREE.Vector3(F[0],F[1],F[2]);
+    
+    return F_three;
+    
+}
+
+
 function transponer_inversa(F){
     var F_svd = three_a_svdjs(F);
     var R = lightmatrix.inverse(lightmatrix.transpose(F_svd));

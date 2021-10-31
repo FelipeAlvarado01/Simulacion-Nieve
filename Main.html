@@ -60,15 +60,12 @@
         
         //console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);
         
-        var vec1 = new THREE.Vector3(3,5,4);
+        var vec1 = new THREE.Vector3(0,5,4);
         var vec2 = new THREE.Vector3(3,9,3);
-        var sumVec = vec1+vec2;
-        console.log("suma de vectores: "+sumVec.x);
  
         var m = new THREE.Matrix3();
-        var m2 = new THREE.Matrix3(0);
+        var m2 = new THREE.Matrix3();
         var mr = new THREE.Matrix3();
-        m2.set(0);
         var n = m2.elements;
         
         m.set(1,2,3,
@@ -76,14 +73,14 @@
               7,8,9);
         
 
-        var rmulvecxmat = mulVector3Matriz3(vec1,m);
+    /*var rmulvecxmat = mulVector3Matriz3(vec1,m);
         console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.x);
         console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.y);
         console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.z);
-        console.log("Mostrar matriz = " + n);
+        console.log("Mostrar matriz = " + n);*/
         
         
-        /*mr.multiplyMatrices(m,m2);
+        //mr.multiplyMatrices(m,m2);
         
         //Prueba SVD
         const a =[[1,2,2],
@@ -96,20 +93,30 @@
         console.log(v);
         console.log(q);
         
-        var adjV = lightmatrix.adjoint(v);
+        for(var i=0;i<3;i++){
+            console.log("Elementos s "+i + " : " +q[i]);
+        }
+        
+        var vecSVD = svdjs_a_threeVector3(q);
+        console.log("componentes del vector Three.js: " + vecSVD.x);
+        /*var adjV = lightmatrix.adjoint(v);
         var MateResult =lightmatrix.product(u, adjV);
         console.log("Matriz adjunta de V: "+lightmatrix.adjoint(v));
         console.log("Matriz resultante U*V: "+lightmatrix.product(u, adjV));
         
         for(i=0;i<3;i++){
             for(j=0;j<3;j++){
-                console.log("Elemento en la pisicion "+i+"-"+j+" : "+ a[i][j]);
+                console.log("Elemento en la pisicion "+i+"-"+j+" : "+ u[i][j]);
             }
-        }
+        }*/
         
-        transponer_inversa(m);*/
+        var U = svdjs_a_three(u);
+        var Ue = U.elements;
+        console.log("U : "+ Ue);
+        //transponer_inversa(m);
         
-	}
+        
+
   
 	function animate() {
 			requestAnimationFrame( animate );

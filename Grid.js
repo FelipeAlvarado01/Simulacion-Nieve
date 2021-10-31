@@ -277,48 +277,29 @@ class Grid{
            var identidad = new THREE.Matrix3();
            var dgrad_E_siguiente = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad, grad_vp.multiplyScalar(delta_t)));
            var F_siguiente = this.todas_particulas[i].G_deformacion_P.multiply(dgrad_E_siguiente);
-       }
-        
+           
+           dgrad_E_svd = three_a_svdjs(dgrad_E_siguiente);
+           var { u, v, q } = SVDJS.SVD(dgrad_E_svd);
+           var U = svdjs_a_three(u);
+           var V = svdjs_a_three(v);
+           var S_hat_vec = svdjs_a_threeVector3(q);
+           
+           var S_vec = S_hat_vec.clampScalar(1-theta_c, 1+theta_s);
+           
+           var S = new THREE.Matrix3();
+           S.set(S_vec.x,0,0,
+                 0,S_vec.y,0,
+                 0,0,S_vec.z);
+           
+           var S_inv = new THREE.Matrix3();
+           S_inv.set(1/S_vec.x,0,0,
+                     0,1/S_vec.y,0,
+                     0,0,1/S_vec.z);
+           
+           this.todas_particulas[i].G_deformacion_E = V.transpose().multiply(S).multiply(U);
+           this.todas_particulas[i].G_deformacion_P = F_siguiente.multiply(U.transpose()).multiply(S_inv).multiply(V);
+       } 
     }
-    
-    /*void Grid::update_deformation_gradients(float theta_c, float theta_s, float delta_t) {
-  for (Particle *particle : all_particles) {
-    mat3 grad_vp = mat3(0.0f);
-
-    for (int dest_i = particle->i_lo; dest_i < particle->i_hi; ++dest_i) {
-      for (int dest_j = particle->j_lo; dest_j < particle->j_hi; ++dest_j) {
-        for (int dest_k = particle->k_lo; dest_k < particle->k_hi; ++dest_k) {
-          vec3 weight_grad = particle->b_spline_grad_at(dest_i, dest_j, dest_k);
-          vec3 velocity = nodes[dest_i][dest_j][dest_k]->next_velocity;
-          grad_vp += outerProduct(velocity, weight_grad);
-        }
-      }
-    }
-    mat3 identity = mat3(1.0f);
-    mat3 dgrad_E_next = (identity + delta_t * grad_vp) * particle->deformation_grad_E;
-    mat3 F_next = dgrad_E_next * particle->deformation_grad_P;
-
-    Matrix3f dgrad_E_eigen = glm_to_eigen(dgrad_E_next);
-    JacobiSVD<MatrixXf> svd(dgrad_E_eigen, ComputeFullU | ComputeFullV);
-    Matrix3f U_eigen = svd.matrixU();
-    Matrix3f V_eigen = svd.matrixV();
-    Vector3f S_eigen = svd.singularValues();
-    mat3 U = eigen_to_glm(U_eigen);
-    mat3 V = eigen_to_glm(V_eigen);
-    vec3 S_hat_vec = eigen_to_glm(S_eigen);
-
-    vec3 S_vec = clamp(S_hat_vec, 1-theta_c, 1+theta_s);
-    mat3 S = mat3(S_vec[0], 0.0, 0.0,
-                            0.0, S_vec[1], 0.0,
-                            0.0, 0.0, S_vec[2]);
-    mat3 S_inv = mat3(1.0/S_vec[0], 0.0, 0.0,
-                            0.0, 1.0/S_vec[1], 0.0,
-                            0.0, 0.0, 1.0/S_vec[2]);
-
-    particle->deformation_grad_E = U * S * transpose(V);
-    particle->deformation_grad_P = V * S_inv * transpose(U) * F_next;
-  }
-}*/
 }
 
 

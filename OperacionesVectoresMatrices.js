@@ -103,6 +103,57 @@ function restMatriz3(matriz_1,matriz_2){
                          matE_1[2]-matE_2[2],matE_1[5]-matE_2[5],matE_1[8]-matE_2[8]);
 }
 
+function clamp(vector,minVal,maxVal){
+    //min(max(vector,minVal),maxVal)
+    
+    //comparacion para el primer componenete del vector
+    if(vector.x>minVal){
+      var result_x = vector.x;
+    }
+    else{
+      var result_x = minVal;
+    }
+    
+    if(result_x < maxVal){
+        var result_x = result_x;
+    }
+    else{
+        var result_x = maxVal;
+    }
+    
+    //comparacion para el segundo componenete del vector
+    if(vector.y>minVal){
+      var result_y = vector.y;
+    }
+    else{
+      var result_y = minVal;
+    }
+    
+    if(result_y < maxVal){
+        var result_y = result_y;
+    }
+    else{
+        var result_y = maxVal;
+    }
+    
+    //comparacion para el segundo componenete del vector
+    if(vector.z>minVal){
+      var result_z = vector.z;
+    }
+    else{
+      var result_z = minVal;
+    }
+    
+    if(result_z < maxVal){
+        var result_z = result_z;
+    }
+    else{
+        var result_z = maxVal;
+    }
+    
+    return new THREE.Vector3(result_x,result_y,result_z);
+}
+
 
 
 
