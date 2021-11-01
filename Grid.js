@@ -17,7 +17,6 @@ class GridNode{
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-
 class Grid{
     constructor(res_x,res_y,res_z,h){  
        //Atributos y inicializacion    
@@ -78,7 +77,7 @@ class Grid{
                         var nodo = this.nodos[dest_i][dest_j][dest_k];
                         if(nodo == null){
                            nodo =  new GridNode();
-                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k);
+                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor ();
                            this.nodos[dest_i][dest_j][dest_k] = nodo;
                         }
                         this.nodos_en_uso.push(nodo);
@@ -93,23 +92,52 @@ class Grid{
     //Elimina los nodos no usados
     eliminarNodosNoUsados() { 
         for (var i=0;i<this.nodos_en_uso.length;i++) {
-            var index = this.nodos_en_uso[i].index;
+            var index = this.nodos_en_uso[i].index.floor ();
             this.nodos[index.x][index.y][index.z] = null;
             this.nodos_en_uso[i] = null; //Elimina los elementos del array 
         }
         this.nodos_en_uso.length = 0; //Se limpia el array
     }
 
-    //Metodos de Grid
+    //Se llaman los demas metodo de la clase Grid
     simular(delta_t, aceleracion_externa, colision_objetos, parametros){
        this.steps_since_node_reset++; 
         if (this.steps_since_node_reset > this.reset_time / delta_t) {
             eliminarNodosNoUsados();
             this.steps_since_node_reset = 0;
         }
+        
         resetearGrid();
         
         particulaAlaGrid()  //Paso 1
+        
+        if (primer_paso) {
+            calcular_Volumenes_Densidad_de_particula();           // Paso 2.
+            primer_paso = false;
+        }
+        
+        calcular_F_hat_Ep(delta_t);           // Paso 3.
+        calculos_fuerza_grid(parametros.mu_0,parametros.lambda_0, parametros.xi);           // Paso 3.
+        //aplicar_aceleracion_ext(aceleracion_externa);
+        
+        calcular_velocidades_grid(delta_t,colision_objetos);           // Paso 4-5.
+        
+        
+        actualizar_gradiente_deformacion(parametros.theta_c, parametros.theta_s, delta_t);           // Paso 7.
+        
+        actualizar_velocidad_particula(parametros.alpha);           // Paso 8.
+        
+        var total_acc = new THREE.Vector3();
+        for(var i=0;i<aceleracion_externa.length;i++){
+            total_acc = sumaVec3(total_acc,aceleracion_externa[i]);
+        }
+        for(var i=0;i<this.todas_particulas.length;i++){
+            this.todas_particulas[i].velocidad = sumaVec3(this.todas_particulas[i].velocidad,total_acc.multiplyScalar(delta_t));       
+        }
+        
+        calcular_colision_particula(delta_t,colision_objetos);           // Paso 9.
+        
+        actulizar_posicion_particula(delta_t);           // Paso 10.
     }   
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -349,27 +377,8 @@ class Grid{
             this.todas_particulas[i].posicion = sumaVec3(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad.multiplyScalar(delta_t));
         }
     }
-    
-    resetear_grid_de_trabajo(particula){
-        particula.Calculos_limites_vencidad();
-        particula.Calculos_gradiente_b_spline();
-    }
-  
-}
-/*
-void print_grid_node(GridNode* node) {
-  cout << "GridNode(" << " ";
-  cout << node->mass << " ";
-  cout << to_string(node->index) << " ";
-  cout << to_string(node->velocity) << " ";
-  cout << ")\n";
 }
 
-void test_grid_node() {
-  GridNode* node = new GridNode();
-  print_grid_node(node);
-}
-*/
 
 
 
