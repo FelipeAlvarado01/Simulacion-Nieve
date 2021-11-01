@@ -157,7 +157,7 @@ class Grid{
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
                         var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);   //Valores flotates
-                        densidad = peso * this.nodos[dest_i][dest_j][dest_k].masa; //mi*Wi 
+                        densidad += peso * this.nodos[dest_i][dest_j][dest_k].masa; //mi*Wi 
                         
                     }
                 }
@@ -188,20 +188,18 @@ class Grid{
                         var grad_peso = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k); //Es un vector3
                         var velocidad = this.nodos[dest_i][dest_j][dest_k].velocidad;
                         
-                        var resultMul = mulMatrizOfVectores3(velocidad,grad_peso).multiplyScalar(delta_t); //outerProduct en glm (c++)   
-                        sum = sumMatriz3(sum,resultMul); 
+                        //mulMatrizOfVectores3 = outerProduct en glm (c++)   
+                        sum = sumMatriz3(sum,mulMatrizOfVectores3(velocidad,grad_peso).multiplyScalar(delta_t)); 
                     }
                 }
             }
             
             var identidad = new THREE.Matrix3(); //Se inicializa como una matriz identidad (unos en su diagonal)
-            this.todas_particulas[i].F_hat_Ep = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad,sum));
+            this.todas_particulas[i].F_hat_Ep = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad,sum)); //matriz3x3
         } 
     }
     
     calculos_fuerza_grid(mu_0, lambda_0, xi){
-        
-        var h3 = Math.pow(this.h,3);
         
         for(var i=0;i<this.todas_particulas.length;i++){
             
@@ -212,9 +210,10 @@ class Grid{
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
-                       var peso_grad = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k);
                         
+                       var peso_grad = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k);
                        this.nodos[dest_i][dest_j][dest_k].fuerza = restaVec3(this.nodos[dest_i][dest_j][dest_k].fuerza,mulVector3Matriz3(peso_grad,neg_fuerza_noPonderada));    
+                        
                     }
                 }
             }
@@ -243,8 +242,8 @@ class Grid{
             
             var posicion = this.nodos_en_uso[i].index.multiplyScalar(this.h);
             
-            for(var j=0;j<this.collision_objecto.length;j++){
-                this.nodos_en_uso[i].siguiente_velocidad = this.collision_objecto[j].choque(posicion, this.nodos_en_uso[i].siguiente_velocidad, delta_t);
+            for(var j=0;j< collision_objecto.length;j++){
+                this.nodos_en_uso[i].siguiente_velocidad = collision_objecto[j].choque(posicion, this.nodos_en_uso[i].siguiente_velocidad, delta_t);
             }
         }
     }
@@ -278,7 +277,7 @@ class Grid{
            var dgrad_E_siguiente = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad, grad_vp.multiplyScalar(delta_t)));
            var F_siguiente = this.todas_particulas[i].G_deformacion_P.multiply(dgrad_E_siguiente);
            
-           dgrad_E_svd = three_a_svdjs(dgrad_E_siguiente);
+           var dgrad_E_svd = three_a_svdjs(dgrad_E_siguiente);
            var { u, v, q } = SVDJS.SVD(dgrad_E_svd);
            var U = svdjs_a_three(u);
            var V = svdjs_a_three(v);
@@ -300,18 +299,77 @@ class Grid{
            this.todas_particulas[i].G_deformacion_P = F_siguiente.multiply(U.transpose()).multiply(S_inv).multiply(V);
        } 
     }
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    //Octavo paso - Actualizar la velocidad de la particula
+    
+    actualizar_velocidad_particula(alpha){
+        for(var i=0;i<this.todas_particulas.length;i++){
+            
+            var v_pic = new THREE.Vector3();
+            var v_flip = this.todas_particulas[i].velocidad;
+            
+            for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
+                for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
+                    for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
+                        
+                        var dest = this.nodos[dest_i][dest_j][dest_k];
+                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);
+                        v_pic = sumaVec3(v_pic,dest.siguiente_velocidad.multiplyScalar(peso));
+                        v_flip = sumaVec3(v_flip,restaVec3(dest.siguiente_velocidad,dest.velocidad).multiplyScalar(peso));
+                    
+                    }
+                }
+            }
+            
+            this.todas_particulas[i].velocidad = sumaVec3(v_pic.multiplyScalar(1 - alpha), v_flip.multiplyScalar(alpha));
+            
+        }
+    }
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    //Noveno paso - Actualizar la velocidad de la particula.
+    
+    calcular_colision_particula(delta_t,collision_objecto){
+      for (var i=0;i<this.todas_particulas.length;i++) {
+        for (var j=0;j<collision_objecto.length;j++) {
+          this.todas_particulas[i].velocidad = collision_objecto[j].choque(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad, delta_t);
+        }
+      } 
+    }
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    //Decimo paso - Actualizar posicion de la particula
+    
+    actulizar_posicion_particula(delta_t){
+        for( var i=0;i<this.todas_particulas.length;i++){
+            this.todas_particulas[i].posicion = sumaVec3(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad.multiplyScalar(delta_t));
+        }
+    }
+    
+    resetear_grid_de_trabajo(particula){
+        particula.Calculos_limites_vencidad();
+        particula.Calculos_gradiente_b_spline();
+    }
+  
+}
+/*
+void print_grid_node(GridNode* node) {
+  cout << "GridNode(" << " ";
+  cout << node->mass << " ";
+  cout << to_string(node->index) << " ";
+  cout << to_string(node->velocity) << " ";
+  cout << ")\n";
 }
 
-
-
-
-
-
-
-
-
-
-
+void test_grid_node() {
+  GridNode* node = new GridNode();
+  print_grid_node(node);
+}
+*/
 
 
 

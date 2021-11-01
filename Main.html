@@ -65,6 +65,7 @@
  
         var m = new THREE.Matrix3();
         var m2 = new THREE.Matrix3();
+        var m3 = new THREE.Matrix3();
         var mr = new THREE.Matrix3();
         var n = m2.elements;
         
@@ -72,7 +73,18 @@
               4,5,6,
               7,8,9);
         
-
+        m2.set(3,4,3,
+               4,5,4,
+               9,8,9);
+        
+        m3.set(1,2,3,
+               4,5,6,
+               7,8,9);
+        
+        mr = m.transpose().multiply(m2).multiply(m3).multiply(m);
+        
+        var mre = mr.elements;
+        console.log("Multiplicacion de matrices: "+mre)
     /*var rmulvecxmat = mulVector3Matriz3(vec1,m);
         console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.x);
         console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.y);
@@ -89,16 +101,16 @@
                  ];
         
         var { u, v, q } = SVDJS.SVD(a)
-        console.log(u);
-        console.log(v);
-        console.log(q);
+        //console.log(u);
+        //console.log(v);
+        //console.log(q);
         
-        for(var i=0;i<3;i++){
+        /*for(var i=0;i<3;i++){
             console.log("Elementos s "+i + " : " +q[i]);
         }
         
         var vecSVD = svdjs_a_threeVector3(q);
-        console.log("componentes del vector Three.js: " + vecSVD.x);
+        console.log("componentes del vector Three.js: " + vecSVD.x);*/
         /*var adjV = lightmatrix.adjoint(v);
         var MateResult =lightmatrix.product(u, adjV);
         console.log("Matriz adjunta de V: "+lightmatrix.adjoint(v));
@@ -110,12 +122,12 @@
             }
         }*/
         
-        var U = svdjs_a_three(u);
+        /*var U = svdjs_a_three(u);
         var Ue = U.elements;
-        console.log("U : "+ Ue);
+        console.log("U : "+ Ue);*/
         //transponer_inversa(m);
         
-        
+    }
 
   
 	function animate() {
