@@ -10,7 +10,6 @@ var n_func = new Array(NFUNCRESOLUTION);
     }
 
 var n_func_derivative = new Array(NFUNCRESOLUTION);
-
     for(var i = 0;i<n_func_derivative.length;i++){
        n_func_derivative[i] = 0; 
     }

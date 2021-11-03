@@ -65,7 +65,8 @@ class Particula{
             for(var dest_j=this.j_lo; dest_j<this.j_hi ; dest_j++){
                 for(var dest_k=this.k_lo; dest_k<this.k_hi ; dest_k++){ 
                     //vector_particual/h-vector_des
-                    var scaled = this.posicion.divideScalar(this.h).sub(new THREE.Vector3(dest_i, dest_j, dest_k));
+                    //var scaled = this.posicion.divideScalar(this.h).sub(new THREE.Vector3(dest_i, dest_j, dest_k));
+                    var scaled = Vec3SubVec3(Vec3DivEscalar(this.posicion,this.h),new THREE.Vector3(dest_i, dest_j, dest_k));
                     this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Funcion b_spline proviene de interpolacion.js
                     this.val_grad_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline_grad(scaled, this.h); //Funcion b_spline_grad proviene de interpolacion.js  
                 }

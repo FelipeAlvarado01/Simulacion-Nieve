@@ -64,7 +64,8 @@ class Grid{
         for(var i=0;i<this.todas_particulas.length;i++){
             this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas.posicion,new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z).subScalar(1e-5))); //subScalar resta un escalar a un vector
             
-            var index = this.todas_particulas[i].posicion.divideScalar(this.h).floor();
+            //var index = this.todas_particulas[i].posicion.divideScalar(this.h).floor();
+            var index = Vec3DivEscalar(this.todas_particulas[i].posicion,this.h).floor();
             
             this.todas_particulas[i].Calculos_limites_vencidad();
             this.todas_particulas[i].Calculos_gradiente_b_spline();
@@ -92,7 +93,8 @@ class Grid{
     //Elimina los nodos no usados
     eliminarNodosNoUsados() { 
         for (var i=0;i<this.nodos_en_uso.length;i++) {
-            var index = this.nodos_en_uso[i].index.floor ();
+            //var index = this.nodos_en_uso[i].index.floor();
+            var index = Vec3Floor(this.nodos_en_uso[i].index);
             this.nodos[index.x][index.y][index.z] = null;
             this.nodos_en_uso[i] = null; //Elimina los elementos del array 
         }
@@ -154,7 +156,8 @@ class Grid{
                         var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);//Es un valor flotante
                         this.nodos[dest_i][dest_j][dest_k].masa += peso * this.todas_particulas[i].masa; //m = sumatoria mi*Wi
                         
-                        var resultMul = this.todas_particulas[i].velocidad.multiplyScalar(peso * this.todas_particulas[i].masa);  
+                        //var resultMul = this.todas_particulas[i].velocidad.multiplyScalar(peso * this.todas_particulas[i].masa);  
+                        var resultMul = Vec3MulEscalar(this.todas_particulas[i].velocidad, peso * this.todas_particulas[i].masa); 
                         this.nodos[dest_i][dest_j][dest_k].velocidad = sumaVec3(this.nodos[dest_i][dest_j][dest_k].velocidad,resultMul);  //v=sumatoria mp*Wi/mi
                         
                     }
@@ -164,7 +167,8 @@ class Grid{
         
         for (var i=0;i<this.nodos_en_uso.length;i++) {
             if (this.nodos_en_uso[i].masa > 0) {
-                this.nodos_en_uso[i].velocidad = this.nodos_en_uso[i].velocidad.divideScalar(this.nodos_en_uso[i].masa);
+                //this.nodos_en_uso[i].velocidad = this.nodos_en_uso[i].velocidad.divideScalar(this.nodos_en_uso[i].masa);
+                this.nodos_en_uso[i].velocidad = Vec3DivEscalar(this.nodos_en_uso[i].velocidad,this.nodos_en_uso[i].masa);
             }
         }       
     } 
@@ -217,13 +221,14 @@ class Grid{
                         var velocidad = this.nodos[dest_i][dest_j][dest_k].velocidad;
                         
                         //mulMatrizOfVectores3 = outerProduct en glm (c++)   
-                        sum = sumMatriz3(sum,mulMatrizOfVectores3(velocidad,grad_peso).multiplyScalar(delta_t)); 
+                        sum = sumMatriz3(sum,mulMatrizOfVectores3(velocidad,grad_peso).multiplyScalar(delta_t)); //Bien
                     }
                 }
             }
             
             var identidad = new THREE.Matrix3(); //Se inicializa como una matriz identidad (unos en su diagonal)
-            this.todas_particulas[i].F_hat_Ep = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad,sum)); //matriz3x3
+            //this.todas_particulas[i].F_hat_Ep = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad,sum)); //matriz3x3
+            this.todas_particulas[i].F_hat_Ep = mulMatriz3(this.todas_particulas[i].G_deformacion_E,sumMatriz3(identidad,sum));//matriz3x3
         } 
     }
     
@@ -232,8 +237,10 @@ class Grid{
         for(var i=0;i<this.todas_particulas.length;i++){
             
             var volumen = this.todas_particulas[i].volumen;
-            var sigma_p =  this.todas_particulas[i].G_deformacion_E.transpose().multiply(psi_derivada(mu_0,lambda_0,xi,this.todas_particulas[i]));
-            var neg_fuerza_noPonderada = sigma_p.multiplyScalar(volumen);
+            //var sigma_p =  this.todas_particulas[i].G_deformacion_E.transpose().multiply(psi_derivada(mu_0,lambda_0,xi,this.todas_particulas[i]));
+            var sigma_p = mulMatriz3(transpuestaMat3(this.todas_particulas[i].G_deformacion_E), psi_derivada(mu_0,lambda_0,xi,this.todas_particulas[i]));
+            //var neg_fuerza_noPonderada = sigma_p.multiplyScalar(volumen);
+            var neg_fuerza_noPonderada = Mat3MulEscalar(sigma_p,volumen);
             
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
@@ -252,7 +259,8 @@ class Grid{
     aplicar_aceleracion_ext(aceleraciones_externa){
         for(var i=0;i<this.nodos_en_uso.length;i++){
             for(var j=0; j<aceleraciones_externa.length;j++){
-                this.nodos_en_uso[i].fuerza = sumaVec3(this.nodos_en_uso[i].fuerza,aceleraciones_externa[j].multiplyScalar(this.nodos_en_uso[i].masa));
+                //this.nodos_en_uso[i].fuerza = sumaVec3(this.nodos_en_uso[i].fuerza,aceleraciones_externa[j].multiplyScalar(this.nodos_en_uso[i].masa));
+                this.nodos_en_uso[i].fuerza = sumaVec3(this.nodos_en_uso[i].fuerza,Vec3MulEscalar(aceleraciones_externa[j],this.nodos_en_uso[i].masa));
             }
         }
     }
@@ -265,10 +273,12 @@ class Grid{
             this.nodos_en_uso[i].siguiente_velocidad = this.nodos_en_uso[i].velocidad;
             
             if(this.nodos_en_uso[i].masa > 0){
-                this.nodos_en_uso[i].siguiente_velocidad = sumaVec3(this.nodos_en_uso[i].siguiente_velocidad,this.nodos_en_uso[i].fuerza.multiplyScalar(delta_t/this.nodos_en_uso[i].masa)); 
+                //this.nodos_en_uso[i].siguiente_velocidad = sumaVec3(this.nodos_en_uso[i].siguiente_velocidad,this.nodos_en_uso[i].fuerza.multiplyScalar(delta_t/this.nodos_en_uso[i].masa)); 
+                this.nodos_en_uso[i].siguiente_velocidad = sumaVec3(this.nodos_en_uso[i].siguiente_velocidad,Vec3MulEscalar(this.nodos_en_uso[i].fuerza,delta_t/this.nodos_en_uso[i].masa)); 
             }
             
-            var posicion = this.nodos_en_uso[i].index.multiplyScalar(this.h);
+            //var posicion = this.nodos_en_uso[i].index.multiplyScalar(this.h);
+            var posicion = Vec3MulEscalar(this.nodos_en_uso[i].index,this.h);
             
             for(var j=0;j< collision_objecto.length;j++){
                 this.nodos_en_uso[i].siguiente_velocidad = collision_objecto[j].choque(posicion, this.nodos_en_uso[i].siguiente_velocidad, delta_t);
@@ -302,8 +312,10 @@ class Grid{
             }
            
            var identidad = new THREE.Matrix3();
-           var dgrad_E_siguiente = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad, grad_vp.multiplyScalar(delta_t)));
-           var F_siguiente = this.todas_particulas[i].G_deformacion_P.multiply(dgrad_E_siguiente);
+           //var dgrad_E_siguiente = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad, grad_vp.multiplyScalar(delta_t)));
+           var dgrad_E_siguiente = mulMatriz3(this.todas_particulas[i].G_deformacion_E,sumMatriz3(identidad, Mat3MulEscalar(grad_vp,delta_t)));
+           //var F_siguiente = this.todas_particulas[i].G_deformacion_P.multiply(dgrad_E_siguiente);
+           var F_siguiente = mulMatriz3(this.todas_particulas[i].G_deformacion_P,dgrad_E_siguiente);
            
            var dgrad_E_svd = three_a_svdjs(dgrad_E_siguiente);
            var { u, v, q } = SVDJS.SVD(dgrad_E_svd);
@@ -311,7 +323,8 @@ class Grid{
            var V = svdjs_a_three(v);
            var S_hat_vec = svdjs_a_threeVector3(q);
            
-           var S_vec = S_hat_vec.clampScalar(1-theta_c, 1+theta_s);
+           //var S_vec = S_hat_vec.clampScalar(1-theta_c, 1+theta_s);
+           var S_vec = Vec3ClampScalar(S_hat_vec,1 - theta_c, 1 + theta_s);
            
            var S = new THREE.Matrix3();
            S.set(S_vec.x,0,0,
@@ -323,9 +336,11 @@ class Grid{
                      0,1/S_vec.y,0,
                      0,0,1/S_vec.z);
            
-           this.todas_particulas[i].G_deformacion_E = V.transpose().multiply(S).multiply(U);
-           this.todas_particulas[i].G_deformacion_P = F_siguiente.multiply(U.transpose()).multiply(S_inv).multiply(V);
-       } 
+           //this.todas_particulas[i].G_deformacion_E = V.transpose().multiply(S).multiply(U);
+           this.todas_particulas[i].G_deformacion_E = mulMatriz3(mulMatriz3(transpuestaMat3(V),S),U);
+           //this.todas_particulas[i].G_deformacion_P = F_siguiente.multiply(U.transpose()).multiply(S_inv).multiply(V);
+           this.todas_particulas[i].G_deformacion_P = mulMatriz3(mulMatriz3(mulMatriz3(F_siguiente,transpuestaMat3(U)),S_inv),V);
+        } 
     }
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,14 +359,16 @@ class Grid{
                         
                         var dest = this.nodos[dest_i][dest_j][dest_k];
                         var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);
-                        v_pic = sumaVec3(v_pic,dest.siguiente_velocidad.multiplyScalar(peso));
+                        //v_pic = sumaVec3(v_pic,dest.siguiente_velocidad.multiplyScalar(peso));
+                        v_pic = sumaVec3(Vec3MulEscalar(v_pic,dest.siguiente_velocidad,peso));
                         v_flip = sumaVec3(v_flip,restaVec3(dest.siguiente_velocidad,dest.velocidad).multiplyScalar(peso));
                     
                     }
                 }
             }
             
-            this.todas_particulas[i].velocidad = sumaVec3(v_pic.multiplyScalar(1 - alpha), v_flip.multiplyScalar(alpha));
+            //this.todas_particulas[i].velocidad = sumaVec3(v_pic.multiplyScalar(1 - alpha), v_flip.multiplyScalar(alpha));
+            this.todas_particulas[i].velocidad = sumaVec3(Vec3MulEscalar(v_pic,1 - alpha), Vec3MulEscalar(v_flip,alpha));
             
         }
     }
@@ -374,7 +391,8 @@ class Grid{
     
     actulizar_posicion_particula(delta_t){
         for( var i=0;i<this.todas_particulas.length;i++){
-            this.todas_particulas[i].posicion = sumaVec3(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad.multiplyScalar(delta_t));
+            //this.todas_particulas[i].posicion = sumaVec3(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad.multiplyScalar(delta_t));
+            this.todas_particulas[i].posicion = sumaVec3(this.todas_particulas[i].posicion,Vec3MulEscalar(this.todas_particulas[i].velocidad,delta_t));
         }
     }
 }

@@ -33,6 +33,8 @@
     <script src="Interpolacion.js"></script>
     <script src="Particula.js"></script>
     <script src="Grid.js"></script>
+    <script src="ColisionObjetos.js"></script>
+    <script src="Cubo.js"></script>
     <script src="Simulacion.js"></script>
     
     <script>
@@ -50,46 +52,83 @@
 
         ///////////////////////////////////////////////////////////  
         //Pruebas clase particula
-        var particula = new Particula(new THREE.Vector3(50,1,1), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,0.1);
-        var particula2 = new Particula(new THREE.Vector3(1,1,1), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,0.1);
+        var particula = new Particula(new THREE.Vector3(5,1,1), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,2);
+        //var particula2 = new Particula(new THREE.Vector3(1,1,1), new THREE.Vector3(1,1,1), new THREE.Vector3(5,5,5),1,0.1);
         
         var grid = new Grid(5,5,5,0.1);
         
         grid.nodos_en_uso[0] = particula;
-        grid.nodos_en_uso.push(particula2);
+        //grid.nodos_en_uso.push(particula2);
         
         //console.log("tam nodos en uso = "+ grid.nodos_en_uso.length);
         
         var vec1 = new THREE.Vector3(0,5,4);
         var vec2 = new THREE.Vector3(3,9,3);
- 
+        var vec3 = new THREE.Vector4(3,9,3,5);
+        var vec5 = new THREE.Vector4(3,9,3,5);
+        
+        //var rdivesca = Vec3DivEscalar(vec1,2);
+        //var rdivesca = Vec3SubVec3(vec1,vec2);
+        //var rdivesca = Vec3SubVec3(Vec3DivEscalar(particula.posicion,particula.h),new THREE.Vector3(5, 6, 7));
+        //var rdivesca = Vec3Floor(Vec3DivEscalar(particula.posicion,particula.h));
+        //var rdivesca = Vec3MulEscalar(particula.posicion,2*particula.h).multiplyScalar(2);
+        //var rdivesca = Vec3MulEscalar(particula.posicion,2*particula.h).multiplyScalar(2);
+        var rdivesca = mulVector(vec3,vec1);
+        
+        console.log("Vector original x: " + particula.posicion.x);
+        console.log("Vector original y: " + particula.posicion.y);
+        console.log("Vector original z: " + particula.posicion.z);
+        
+        console.log("-------------------------------");
+        
+        
+        console.log("Division del escalar x: " + rdivesca.x);
+        console.log("Division del escalar y: " + rdivesca.y);
+        console.log("Division del escalar z: " + rdivesca.z);
+        
+        console.log("-------------------------------");
+        
+        console.log("Vector original desp x: " + particula.posicion.x);
+        console.log("Vector original desp y: " + particula.posicion.y);
+        console.log("Vector original desp z: " + particula.posicion.z);
+    
         var m = new THREE.Matrix3();
         var m2 = new THREE.Matrix3();
         var m3 = new THREE.Matrix3();
         var mr = new THREE.Matrix3();
-        var n = m2.elements;
         
         m.set(1,2,3,
               4,5,6,
               7,8,9);
         
-        m2.set(3,4,3,
-               4,5,4,
-               9,8,9);
+        m2.set(2,-2,2,
+               2,1,0,
+               3,-2,2);
         
         m3.set(1,2,3,
                4,5,6,
                7,8,9);
         
-        mr = m.transpose().multiply(m2).multiply(m3).multiply(m);
+        var me = m.elements;
+        console.log("matriz sin mul= " + me);
+        mr = Mat3MulEscalar(m,2);
+        var mre = mr.elements;
+        
+        console.log(mre);
+        
+        console.log("matriz con mul= " + me);
+        /*mr = m.transpose().multiply(m2).multiply(m3).multiply(m);
         
         var mre = mr.elements;
-        console.log("Multiplicacion de matrices: "+mre)
-    /*var rmulvecxmat = mulVector3Matriz3(vec1,m);
+        console.log("Multiplicacion de matrices: "+mre);*/
+        /*var rmulvecxmat = mulVector3Matriz3(vec1,m);
         console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.x);
         console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.y);
         console.log("Multiplicacion de un vector x matriz = " + rmulvecxmat.z);
-        console.log("Mostrar matriz = " + n);*/
+        
+        var me = m.elements;
+        console.log("Elementos de la matriz: " + me );
+        //console.log("Mostrar matriz = " + n);
         
         
         //mr.multiplyMatrices(m,m2);
@@ -101,31 +140,18 @@
                  ];
         
         var { u, v, q } = SVDJS.SVD(a)
-        //console.log(u);
-        //console.log(v);
-        //console.log(q);
         
-        /*for(var i=0;i<3;i++){
-            console.log("Elementos s "+i + " : " +q[i]);
-        }
+        var rdiv = new THREE.Vector3();
+        rdiv = particula.posicion;
         
-        var vecSVD = svdjs_a_threeVector3(q);
-        console.log("componentes del vector Three.js: " + vecSVD.x);*/
-        /*var adjV = lightmatrix.adjoint(v);
-        var MateResult =lightmatrix.product(u, adjV);
-        console.log("Matriz adjunta de V: "+lightmatrix.adjoint(v));
-        console.log("Matriz resultante U*V: "+lightmatrix.product(u, adjV));
+        console.log("posicion de la particula x = " + particula.posicion.x);
         
-        for(i=0;i<3;i++){
-            for(j=0;j<3;j++){
-                console.log("Elemento en la pisicion "+i+"-"+j+" : "+ u[i][j]);
-            }
-        }*/
+        rdiv.subScalar(2);
         
-        /*var U = svdjs_a_three(u);
-        var Ue = U.elements;
-        console.log("U : "+ Ue);*/
-        //transponer_inversa(m);
+        console.log("Division rdiv x = " + rdiv.x);
+        console.log("Division posicion de la particula x = " + particula.posicion.x);*/
+        
+    
         
     }
 
