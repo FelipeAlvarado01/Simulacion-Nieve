@@ -36,7 +36,7 @@ function transponer_inversa(F){
 
 function polar_R(F){ //SVD de una matriz 3x3
     var F_svd = three_a_svdjs(F);
-    var { u, v, q } = SVDJS.SVD(F_svd)
+    var { u, v, q } = SVDJS.SVD(F_svd);
     //var R =  u * lightmatrix.adjoint(v);
     var R =  lightmatrix.product(u, lightmatrix.adjoint(v));
     

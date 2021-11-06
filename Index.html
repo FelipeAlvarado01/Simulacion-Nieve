@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simulacion de nieve</title>
+      <style>
+      <style>
+            html, body { margin: 0; padding: 0; overflow: hidden; }
+            #info {
+                position: absolute;
+                width: 100%;
+                text-align: center;
+                color: #FFFFFF;
+            }
+        </style>
+  </head>
+  <body>
+
+  
+   <!--Librerias de graficacion-->
+    <script src="js/three.min.js"></script>
+    <script src='js/libs/dat.gui.min.js'></script>
+    <script src="js/controls/OrbitControls.js"></script>
+    
+    <!--Librerias algebraicas para matrices-->
+    <script src="https://unpkg.com/svd-js" type="application/javascript"></script>
+    <script src="https://unpkg.com/lightmatrix/dist/lightmatrix.js"></script>
+     
+    <!--Librerias para la simulacion-->
+    <script src="Escena.js"></script>
+    <script src="OperacionesVectoresMatrices.js"></script>
+    <script src="Fuerzas.js"></script>
+    <script src="ParametrosFisicos.js"></script>
+    <script src="Interpolacion.js"></script>
+    <script src="Particula.js"></script>
+    <script src="Grid.js"></script>
+    <script src="Cubo.js"></script>
+    <script src="Simulacion.js"></script>
+    <script src="main.js"></script>
+    
+    <script>
+      
+	var scene, aspect, camera, renderer,controls;
+		
+	init();
+	animate();
+    render();
+		
+	function init(){
+        
+        //Creacion de la escena 3D
+        creacion();
+
+        ///////////////////////////////////////////////////////////  
+        
+    }
+
+  
+	function animate() {
+			requestAnimationFrame( animate );
+			render();
+			renderer.render( scene, camera );
+	}
+ 
+  
+	function render(){
+        
+        
+    }
+	
+	
+    </script>
+  </body>
+</html>

@@ -86,8 +86,50 @@ function Vec3ClampScalar(vector_1,min,max){
     return rClampScalar.clampScalar(min,max);
 }
 
+function productoPunto(vector_1,vector_2){
+    var rDot= new THREE.Vector3(vector_1.x,vector_1.y,vector_1.z);
+    return rDot.dot(vector_2);
+}
 
+function productoCruz(vector_1,vector_2){
+    var rCross = new THREE.Vector3(vector_1.x,vector_1.y,vector_1.z);
+    return rCross.cross(vector_2);
+}
 
+function normalizacion(vector_1){ //Conevtir un vector en un vector unitario
+    var rNorm = new THREE.Vector3(vector_1.x,vector_1.y,vector_1.z);
+    return rNorm.normalize();
+}
+
+function length(vector_1){
+    var rLength = Math.sqrt(Math.pow(vector_1.x,2) + Math.pow(vector_1.y,2) + Math.pow(vector_1.z,2));
+    return rLength;
+}
+
+function length2(vector_1){
+    var rLength2 = Math.pow(vector_1.x,2) + Math.pow(vector_1.y,2) + Math.pow(vector_1.z,2);
+    return rLength2;
+}
+
+function scale(matriz, vector){
+    var mat_1 = new THREE.Matrix4();
+    var mat_2 = new THREE.Matrix4();
+    var mat_2E = matriz.elements;
+    var matResult = new THREE.Matrix4();
+    
+    mat_1.set(vector.x,0,0,0,
+              0,vector.y,0,0,
+              0,0,vector.z,0,
+                     0,0,0,1);
+    
+    mat_2.set(mat_2E[0],mat_2E[4],mat_2E[8],mat_2E[12],
+              mat_2E[1],mat_2E[5],mat_2E[9],mat_2E[13],
+              mat_2E[2],mat_2E[6],mat_2E[10],mat_2E[14],
+              mat_2E[3],mat_2E[7],mat_2E[11],mat_2E[15],);
+    
+    
+    return mat_1.multiply(mat_2);  
+}
 
 
 //Operaciones de vectores y matrices
@@ -227,7 +269,29 @@ function clamp(vector,minVal,maxVal){
     return new THREE.Vector3(result_x,result_y,result_z);
 }
 
+//Operaciones de matrices 4x4
 
+function mulMatriz4(matriz_1,matriz_2){
+    var matE_1 = matriz_1.elements;
+    var matResult = new THREE.Matrix4();
+    matResult.set(matE_1[0],matE_1[4],matE_1[8],matE_1[12],
+                  matE_1[1],matE_1[5],matE_1[9],matE_1[13],
+                  matE_1[2],matE_1[6],matE_1[10],matE_1[14],
+                  matE_1[3],matE_1[7],matE_1[11],matE_1[15]);
+    
+    return matResult.multiply(matriz_2);
+}
+
+function trasladarMat4(matriz_1,vector){
+    var matE_1 = matriz_1.elements;
+    var matResult = new THREE.Matrix4();
+    matResult.set(matE_1[0],matE_1[4],matE_1[8],matE_1[12],
+                  matE_1[1],matE_1[5],matE_1[9],matE_1[13],
+                  matE_1[2],matE_1[6],matE_1[10],matE_1[14],
+                  matE_1[3],matE_1[7],matE_1[11],matE_1[15]);
+    
+    return matResult.makeTranslation(vector.x,vector.y,vector.z);
+}
 
 
 
