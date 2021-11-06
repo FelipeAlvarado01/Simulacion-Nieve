@@ -27,13 +27,14 @@
      
     <!--Librerias para la simulacion-->
     <script src="Escena.js"></script>
+    <script src= "CrearEsferaParticulas.js"></script>
     <script src="OperacionesVectoresMatrices.js"></script>
-    <script src="Fuerzas.js"></script>
     <script src="ParametrosFisicos.js"></script>
     <script src="Interpolacion.js"></script>
     <script src="Particula.js"></script>
+    <script src="Fuerzas.js"></script>
     <script src="Grid.js"></script>
-    <script src="Cubo.js"></script>
+    <script src="Planos.js"></script>
     <script src="Simulacion.js"></script>
     <script src="main.js"></script>
     
@@ -52,6 +53,37 @@
 
         ///////////////////////////////////////////////////////////  
         
+        iniciar();
+        /*var nodos = new Array(10); 
+        for(var i=0; i<nodos.length; i++) {
+            nodos[i] = new Array(10);
+            for(var j=0; j<nodos[i].length; j++) {
+                nodos[i][j] = new Array(10);
+            }
+        }
+        
+        for(var i=0; i<nodos.length; i++) {
+            for(var j=0; j<nodos[i].length; j++) {
+                for(var k=0; k<nodos[i][j].length; k++) {
+                    nodos[i][j][k] = k;
+                }
+            }
+        }
+        
+        console.log("Elemento en el arreglo: "+nodos[9][9][9]);*/
+        var h = 5/30;
+        var num_particulas = 10;
+        var radio = Math.pow(3 * num_particulas / (16 * Math.pi), 1/3) * h;
+        for(var i=0;i<10;i++){
+            var r = ballRand(radio);
+            
+        console.log("pos x: "+ r.x + " de la particula #"+i);
+        console.log("pos y: "+ r.y + " de la particula #"+i);
+        console.log("pos z: "+ r.z + " de la particula #"+i);
+        }
+        
+        //iniciar();
+        
     }
 
   
@@ -63,6 +95,7 @@
  
   
 	function render(){
+        
         
         
     }

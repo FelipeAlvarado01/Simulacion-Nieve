@@ -28,7 +28,7 @@ class Grid{
        this.dim_y = res_y * h;
        this.dim_z = res_z * h;
         
-       this.h;  
+       this.h = h;  
         
        this.primer_paso = true; 
        this.steps_since_node_reset = 0;
@@ -44,12 +44,22 @@ class Grid{
         Guardara valores del objeto GridNode
         **/
         this.nodos = new Array(this.res_x); 
-        for(var i=0; i<this.nodos; i++) {
+        for(var i=0; i<this.nodos.length; i++) {
             this.nodos[i] = new Array(this.res_y);
             for(var j=0; j<this.nodos[i].length; j++) {
                 this.nodos[i][j] = new Array(this.res_z);
             }
         }
+        
+         for(var i=0; i<this.nodos.length; i++) {
+            for(var j=0; j<this.nodos[i].length; j++) {
+                for(var k=0; k<this.nodos[i][j].length; k++) {
+                    this.nodos[i][j][k] = new GridNode();
+                }
+            }
+        }
+        
+
     }
     
     resetearGrid(){
@@ -62,10 +72,15 @@ class Grid{
         } 
         
         for(var i=0;i<this.todas_particulas.length;i++){
-            this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas.posicion,new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z).subScalar(1e-5))); //subScalar resta un escalar a un vector
+            this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas[i].posicion,Vec3SubEscalar(new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z),1e-5))); //subScalar resta un escalar a un vector
             
             //var index = this.todas_particulas[i].posicion.divideScalar(this.h).floor();
             var index = Vec3DivEscalar(this.todas_particulas[i].posicion,this.h).floor();
+            
+            //console.log("val h: "+ this.h);
+            //console.log("index x: "+ index.x);
+            //console.log("index y: "+ index.y);
+            //console.log("index z: "+ index.z);
             
             this.todas_particulas[i].Calculos_limites_vencidad();
             this.todas_particulas[i].Calculos_gradiente_b_spline();
@@ -78,7 +93,7 @@ class Grid{
                         var nodo = this.nodos[dest_i][dest_j][dest_k];
                         if(nodo == null){
                            nodo =  new GridNode();
-                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor ();
+                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor();
                            this.nodos[dest_i][dest_j][dest_k] = nodo;
                         }
                         this.nodos_en_uso.push(nodo);
@@ -104,42 +119,43 @@ class Grid{
     //Se llaman los demas metodo de la clase Grid
     simular(delta_t, aceleracion_externa, colision_objetos, parametros){
        this.steps_since_node_reset++; 
+        
         if (this.steps_since_node_reset > this.reset_time / delta_t) {
-            eliminarNodosNoUsados();
+            this.eliminarNodosNoUsados();
             this.steps_since_node_reset = 0;
         }
         
-        resetearGrid();
+        this.resetearGrid();
         
-        particulaAlaGrid()  //Paso 1
+        this.particulaAlaGrid()  //Paso 1
         
-        if (primer_paso) {
-            calcular_Volumenes_Densidad_de_particula();           // Paso 2.
-            primer_paso = false;
+        if (this.primer_paso) {
+            this.calcular_Volumenes_Densidad_de_particula();           // Paso 2.
+            this.primer_paso = false;
         }
         
-        calcular_F_hat_Ep(delta_t);           // Paso 3.
-        calculos_fuerza_grid(parametros.mu_0,parametros.lambda_0, parametros.xi);           // Paso 3.
+        this.calcular_F_hat_Ep(delta_t);           // Paso 3.
+        this.calculos_fuerza_grid(parametros.mu_0,parametros.lambda_0, parametros.xi);           // Paso 3.
         //aplicar_aceleracion_ext(aceleracion_externa);
         
-        calcular_velocidades_grid(delta_t,colision_objetos);           // Paso 4-5.
+        this.calcular_velocidades_grid(delta_t,colision_objetos);           // Paso 4-5.
         
         
-        actualizar_gradiente_deformacion(parametros.theta_c, parametros.theta_s, delta_t);           // Paso 7.
+        this.actualizar_gradiente_deformacion(parametros.theta_c, parametros.theta_s, delta_t);           // Paso 7.
         
-        actualizar_velocidad_particula(parametros.alpha);           // Paso 8.
+        this.actualizar_velocidad_particula(parametros.alpha);           // Paso 8.
         
         var total_acc = new THREE.Vector3();
         for(var i=0;i<aceleracion_externa.length;i++){
             total_acc = sumaVec3(total_acc,aceleracion_externa[i]);
         }
         for(var i=0;i<this.todas_particulas.length;i++){
-            this.todas_particulas[i].velocidad = sumaVec3(this.todas_particulas[i].velocidad,total_acc.multiplyScalar(delta_t));       
+            this.todas_particulas[i].velocidad = sumaVec3(this.todas_particulas[i].velocidad,total_acc.multiplyScalar(delta_t));    
         }
         
-        calcular_colision_particula(delta_t,colision_objetos);           // Paso 9.
+        this.calcular_colision_particula(delta_t,colision_objetos);           // Paso 9.
         
-        actulizar_posicion_particula(delta_t);           // Paso 10.
+        this.actulizar_posicion_particula(delta_t);           // Paso 10.
     }   
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,7 +284,7 @@ class Grid{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Cuarto y quinto paso - Actualizar las velocidades de los nodos de la cuadrícula y hacer colisiones
     
-    calcular_velocidades_grid(delta_t,collision_objecto){
+    calcular_velocidades_grid(delta_t,colision_objetos){
         for(var i=0;i<this.nodos_en_uso.length;i++){
             this.nodos_en_uso[i].siguiente_velocidad = this.nodos_en_uso[i].velocidad;
             
@@ -280,8 +296,8 @@ class Grid{
             //var posicion = this.nodos_en_uso[i].index.multiplyScalar(this.h);
             var posicion = Vec3MulEscalar(this.nodos_en_uso[i].index,this.h);
             
-            for(var j=0;j< collision_objecto.length;j++){
-                this.nodos_en_uso[i].siguiente_velocidad = collision_objecto[j].choque(posicion, this.nodos_en_uso[i].siguiente_velocidad, delta_t);
+            for(var j=0;j< colision_objetos.length;j++){
+                this.nodos_en_uso[i].siguiente_velocidad = colision_objetos[j].choque(posicion, this.nodos_en_uso[i].siguiente_velocidad, delta_t);
             }
         }
     }
@@ -377,10 +393,10 @@ class Grid{
     
     //Noveno paso - Actualizar la velocidad de la particula.
     
-    calcular_colision_particula(delta_t,collision_objecto){
+    calcular_colision_particula(delta_t,colision_objetos){
       for (var i=0;i<this.todas_particulas.length;i++) {
-        for (var j=0;j<collision_objecto.length;j++) {
-          this.todas_particulas[i].velocidad = collision_objecto[j].choque(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad, delta_t);
+        for (var j=0;j<colision_objetos.length;j++) {
+          this.todas_particulas[i].velocidad = colision_objetos[j].choque(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad, delta_t);
         }
       } 
     }

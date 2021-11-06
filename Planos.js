@@ -18,7 +18,7 @@ class Planos{
             this.mundoalmodelar = mundoalmodelar;
         
             //Creacion del plano 
-            //var colorP = new THREE.Color('blue');
+            //var colorP = new THREE.Color('transparent');
             this.color = color;
             var geoPlano = new THREE.Geometry();
 			

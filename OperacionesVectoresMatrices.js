@@ -63,7 +63,7 @@ function mulVector(vector_1,vector_2){
 function Vec3DivEscalar(vector,escalar){ //vector dividido por un escalar
     var rDiv = new THREE.Vector3(vector.x,vector.y,vector.z);
     
-    return rDiv.divideScalar(escalar);
+    return rDiv. divideScalar(escalar);
 }
 
 function Vec3SubEscalar(vector,escalar){ //resta de un escarlar
@@ -291,6 +291,15 @@ function trasladarMat4(matriz_1,vector){
                   matE_1[3],matE_1[7],matE_1[11],matE_1[15]);
     
     return matResult.makeTranslation(vector.x,vector.y,vector.z);
+}
+
+//numeros ramdom para una esfera
+function ballRand(radio){
+    var comp_x = Math.random() * (radio + radio) - radio;
+    var comp_y = Math.random() * (radio + radio) - radio;
+    var comp_z = Math.random() * (radio + radio) - radio;
+    
+    return new THREE.Vector3(comp_x,comp_y,comp_z);
 }
 
 

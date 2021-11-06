@@ -1,9 +1,9 @@
 class Particula{
 	//Constructor de la clase Particula. Se crean todos los atributos dentro
-	constructor(posicion,velocidad,res, masa,h){
+	constructor(posicion,res, masa,h){
         //Creacion de atributos de la particula
         this.posicion = posicion; //Posicion, recibe un vector de que recibe x,y,z
-        this.velocidad = velocidad; //Velocidad, recibe un vector de que recibe x,y,z
+        this.velocidad; //Velocidad, recibe un vector de que recibe x,y,z
         this.res = res;
         this.masa = masa;	
         this.h = h;
