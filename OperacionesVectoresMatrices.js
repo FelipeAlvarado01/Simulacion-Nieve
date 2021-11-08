@@ -293,13 +293,58 @@ function trasladarMat4(matriz_1,vector){
     return matResult.makeTranslation(vector.x,vector.y,vector.z);
 }
 
+function mulVector4Matriz4(vector,matriz){
+    var matE = matriz.elements;
+    var comp_x = vector.x * matE[0] + vector.y * matE[1] + vector.z * matE[2] + 1 * matE[3];
+    var comp_y = vector.x * matE[4] + vector.y * matE[5] + vector.z * matE[6] + 1 * matE[7];
+    var comp_z = vector.x * matE[8] + vector.y * matE[9] + vector.z * matE[10] + 1 * matE[11];
+    var comp_w = vector.x * matE[12] + vector.y * matE[13] + vector.z * matE[14] + 1 * matE[15];
+    return new THREE.Vector3(comp_x,comp_y,comp_z);
+}
+
 //numeros ramdom para una esfera
 function ballRand(radio){
-    var comp_x = Math.random() * (radio + radio) - radio;
-    var comp_y = Math.random() * (radio + radio) - radio;
-    var comp_z = Math.random() * (radio + radio) - radio;
-    
-    return new THREE.Vector3(comp_x,comp_y,comp_z);
+    if(radio <= 1){
+        var comp_x = Math.random();
+        var comp_y = Math.random();
+        var comp_z = Math.random();
+        
+        //console.log("comp_x: " +comp_x);
+        if(comp_x > 0.5){
+            var x = comp_x * radio; 
+            //console.log("Si 1 ");
+        }else if(comp_x < 0.5){
+                var x = comp_x * -radio; 
+                //console.log("Si 2 ");
+            }else{
+                    var x = 0;
+                }
+        //console.log("x " +x);
+        
+        if(comp_y > 0.5){
+            var y = comp_y * radio;     
+        }else if(comp_y < 0.5){
+                var y = comp_y * -radio;  
+            }else{
+                    var y = 0;
+                }
+        
+        if(comp_z > 0.5){
+            var z = comp_z * radio;     
+        }else if(comp_z < 0.5){
+                var z = comp_z * -radio;  
+            }else{
+                    var z = 0;
+                }
+
+    }
+    else{
+        var x = Math.random() * (radio + radio) - radio;
+        var y = Math.random() * (radio + radio) - radio;
+        var z = Math.random() * (radio + radio) - radio;  
+    }
+    //console.log("x " +x);
+    return new THREE.Vector3(x,y,z);
 }
 
 

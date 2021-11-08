@@ -36,7 +36,8 @@ function iniciar(){
     
     
     //Se crean las particulas de la simulacion
-    var radio = Math.pow(3 * num_particulas / (16 * Math.pi), 1/3) * h;
+    var primer_term = 3 * num_particulas / (16 * Math.pi);
+    var radio = Math.pow(primer_term, 1/3) * h;
     CrearEsferaParticulas(grid,num_particulas,radio);
     
     var objetos = new Array();
@@ -83,5 +84,5 @@ function iniciar(){
     
     
     //nievesim.cargarColisionObjeto(objetos);
-    nievesim.dibujarContenido(grid,objetos);
+    
 }

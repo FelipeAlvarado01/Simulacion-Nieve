@@ -18,13 +18,17 @@ class Simulacion{
         
         this.grid;
         
-        this.colision_objecto = new Array();
+        this.colision_objecto;
         
         this.is_paused = false;
         
+        this.objetos_en_escena = new Array();
+        
     }
     
-    
+    cargarModeloalmundo(modeloalmundo){
+        this.modeloalmundo = modeloalmundo;
+    }
     cargarGrid(grid){
         this.grid = grid;
     }
@@ -32,77 +36,75 @@ class Simulacion{
     cargarColisionObjeto(objeto){
         this.colision_objecto = objeto;
     }
-         //mat4
-    /*init(modelo){
-        this.modeloalmundo = modelo;
-        var x = this.grid.res_x;
-        var y = this.grid.res_y;
-        var z = this.grid.res_z;
-
-    }*/
     
-    dibujarContenido(grid,objetos){
+    dibujarContenido(){
         if(!this.is_paused){
             for(var i = 0; i < this.paso_simulacion; i++){
-                for(var j=0;j<this.colision_objecto.length;j++){
+                for(var j=0;j< this.colision_objecto.length;j++){
                     if(!this.colision_objecto[j].es_estacionaria()){
                         this.colision_objecto[j].actualizar_posicion(this.delta_t);
                     }
                 }
                 //console.log("Si estoy dibujando contenido");
-                grid.simular(this.delta_t, this.aceleracion_externa, objetos, this.parametros);
-                
-                //console.log("Si estoy dibujando contenido 2");
+                grid.simular(this.delta_t, this.aceleracion_externa,this.colision_objecto, this.parametros);
+
             }
         }
         
         //Actualizar la posicion de la particula
-        this.dibujarParticulas(grid); 
+        this.dibujarParticulas(); 
+    }
+    
+    dibujarParticulas(){
+        var todas_particulas = grid.todas_particulas;
+
+        //console.log("tamArray Todas las particulas: "+ todas_particulas.length);
+        for(var i=0;i<todas_particulas.length;i++){
+            
+            var len = todas_particulas[i].cbrt_volumen;
+            var modelo_particula = new THREE.Matrix4();
+            //modelo_particula = scale(modelo_particula, new THREE.Vector3(len, len, len));
+            modelo_particula = mulMatriz4(modelo_particula,this.modeloalmundo);
+            modelo_particula = mulMatriz4(modelo_particula,trasladarMat4(new THREE.Matrix4(), todas_particulas[i].posicion));
+            
+            //var modelo_particula = trasladarMat4(new THREE.Matrix4(), todas_particulas[i].posicion);
+            var geoPunto = new THREE.Geometry();//Se crean las particulas de nieve
+            geoPunto.vertices.push(new THREE.Vector3(0,0,0));
+            var matPunto = new THREE.PointsMaterial( {color:0xDBDBDB } );
+            var punto = new THREE.Points(geoPunto,matPunto);
+            punto.applyMatrix(modelo_particula);				//Aplicar la matriz de traslación al objeto				
+            punto.elementsNeedUpdate = true;
+            
+            /*const geometry = new THREE.BoxGeometry(len, len, len);
+            const material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+            const cube = new THREE.Mesh( geometry, material );
+            cube.applyMatrix(modelo_particula);				
+            cube.elementsNeedUpdate = true;*/
+
+            scene.add(punto);
+            this.objetos_en_escena.push(punto);
+            
+        }
         
+        /*for(var i=0;i<this.objetos_en_escena.length;i++){
+            scene.add(this.objetos_en_escena[i]);
+            console.log("pos x: "+ this.objetos_en_escena[i].position.x + " de la particula # "+i);
+            console.log("pos y: "+ this.objetos_en_escena[i].position.y + " de la particula # "+i);
+            console.log("pos z: "+ this.objetos_en_escena[i].position.z + " de la particula # "+i);
+        }*/
+         
+    }
+    
+    eliminarObjetosEscena(){
+        for(var i=0;i<this.objetos_en_escena.length;i++){
+            scene.remove(this.objetos_en_escena[i]);
+        }
+        this.objetos_en_escena.length = 0;
     }
     
     /*dibujarGrid(){
         
     }*/
-    
-    dibujarParticulas(grid){
-        var todas_particulas = grid.todas_particulas;
-
-        console.log("tamArray Todas las particulas: "+ todas_particulas.length);
-        for(var i=0;i<todas_particulas.length;i++){
-           
-            var geoPunto = new THREE.Geometry();
-            geoPunto.vertices.push(new THREE.Vector3(todas_particulas[i].posicion.x,todas_particulas[i].posicion.y,todas_particulas[i].posicion.z));
-            var matPunto = new THREE.PointsMaterial( {color:0xDBDBDB } );
-            var punto = new THREE.Points(geoPunto,matPunto);
-            //punto.applyMatrix(modelo_particula);				//Aplicar la matriz de traslación al objeto				
-            //punto.elementsNeedUpdate = true;	//Avisar que la matriz del objeto ha cambiado
-            scene.add(punto);
-            
-            console.log("Si dibuje particulas");
-        }
-        
-        
-                
-        //for(var i=0;i<todas_particulas.length;i++){
-            //var len = todas_particulas[i].cbrt_volumen;
-            //var modelo_particula = new THREE.Matrix4();
-            /*modelo_particula.set(0,0,0,0,
-                                 0,0,0,0,
-                                 0,0,0,0,
-                                 0,0,0,0);*/
-            
-            //modelo_particula = scale(particle_model, new THREE.Vector3(len, len, len));
-            //modelo_particula = mulMatriz4(modelo_particula,this.modeloalmundo);
-            //var mat4 = new THREE.Matrix4();
-            /*mat4.set(0,0,0,0,
-                     0,0,0,0,
-                     0,0,0,0,
-                     0,0,0,0);*/
-            //modelo_particula = mulMatriz4(modelo_particula,trasladarMat4(mat4, todas_particulas[i].poscion));  
-        //}  
-    }
-    
     /*dibujarNodoGrid(){
         
     }
