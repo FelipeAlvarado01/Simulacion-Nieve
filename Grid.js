@@ -34,8 +34,8 @@ class Grid{
        this.steps_since_node_reset = 0;
        this.reset_time = 0.1; 
         
-       this.todas_particulas = new Array(); //Guardar objetos particulas
-       this.nodos_en_uso = new Array();
+       
+
        //this.nodos_en_uso = new Map();
         
         /**
@@ -43,6 +43,7 @@ class Grid{
         Se define la grid para realizar los calculos
         Guardara valores del objeto GridNode
         **/
+        this.todas_particulas = new Array(); //Guardar objetos particulas
         this.nodos = new Array(this.res_x); 
         for(var i=0; i<this.nodos.length; i++) {
             this.nodos[i] = new Array(this.res_y);
@@ -58,6 +59,8 @@ class Grid{
                 }
             }
         }
+        
+        this.nodos_en_uso = new Array();     
     }
     
     resetearGrid(){
@@ -300,7 +303,9 @@ class Grid{
             var posicion = Vec3MulEscalar(this.nodos_en_uso[i].index,this.h);
             
             for(var j=0;j< colision_objetos.length;j++){
+                console.log("objeto en colision no."+j);
                 this.nodos_en_uso[i].siguiente_velocidad = colision_objetos[j].choque(posicion, this.nodos_en_uso[i].siguiente_velocidad, delta_t);
+                console.log("Siguiente velocidad: "+this.nodos_en_uso[i].siguiente_velocidad);
             }
         }
     }
@@ -401,7 +406,11 @@ class Grid{
     calcular_colision_particula(delta_t,colision_objetos){
       for (var i=0;i<this.todas_particulas.length;i++) {
         for (var j=0;j<colision_objetos.length;j++) {
-          this.todas_particulas[i].velocidad = colision_objetos[j].choque(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad, delta_t);
+            //console.log("objeto en colision no." + j);
+            this.todas_particulas[i].velocidad = colision_objetos[j].choque(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad, delta_t);
+            //console.log("Siguiente velocidad x: " + this.todas_particulas[i].velocidad.x);
+            //console.log("Siguiente velocidad y: " + this.todas_particulas[i].velocidad.y);
+            //console.log("Siguiente velocidad z: " + this.todas_particulas[i].velocidad.z);
         }
       } 
     }

@@ -7,11 +7,12 @@ class Planos{
             this.origen = origen;
             this.borde_u = borde_u;
             this.borde_v = borde_v;
-            //this.normal = this.borde_u.cross(this.borde_v).normalize(); 
-            this.normal = normalizacion(productoCruz(this.borde_u,this.borde_v)); 
+        
+            this.normal = normalizacion(productoCruz(borde_u,borde_v));
+
             this.mu = mu;     // friction coefficient_float
 
-            this.velocidad_objeto = new THREE.Vector3(); //Inicializa la velocidad en 0,0,0
+            this.velocidad_objeto = new THREE.Vector3(0,0,0); //Inicializa la velocidad en 0,0,0
         
             //Matrices 4x4
             this.modeloalmundo = modeloalmundo;
@@ -22,16 +23,11 @@ class Planos{
             this.color = color;
             var geoPlano = new THREE.Geometry();
 			
-			var v0 = new THREE.Vector3();
-			var v1 = this.borde_u;
+			var v0 = new THREE.Vector3();//(0,0,0)
+            var v1 = this.borde_u;
 			var v2 = sumaVec3(this.borde_u,this.borde_v);
 			var v3 = this.borde_v;
-            
-            /*var  v0 = new THREE.Vector3(0.0,0.0,0.0);
-			var  v1 = new THREE.Vector3(2.0,0.0,0.0);
-			var  v2 = new THREE.Vector3(2.0,0.0,2.0);
-			var  v3 = new THREE.Vector3(0.0,0.0,2.0);*/
-			
+        	
 			geoPlano.vertices.push(v0);//0
 			geoPlano.vertices.push(v1);//1
 			geoPlano.vertices.push(v2);//2
@@ -47,53 +43,64 @@ class Planos{
 			var matPlano = new THREE.MeshBasicMaterial({vertexColors: THREE.FaceColors});
 			this.plano = new THREE.Mesh(geoPlano,matPlano);
 			this.render();
-			scene.add( this.plano );
-            
-            
+			scene.add( this.plano );   
     }
     
     
-     //Metodos del Cubo
+     //Metodos de los planos
     choque(posicion, velocidad, delta_t){
-        //console.log("this.velocidad_objeto"+this.velocidad_objeto.y);
         
         var velocidad_rel = restaVec3(velocidad,this.velocidad_objeto);
-        var modelo_origen = mulVector4Matriz4(this.origen,this.mundoalmodelar);//retorna un vec3
-        var siguiente_origen_modelo = mulVector4Matriz4(sumaVec3(this.origen,Vec3MulEscalar(this.velocidad_objeto,delta_t)),this.mundoalmodelar);//retorna un vec3
+        var modelo_origen = mulVector4Matriz4(this.origen,this.mundoalmodelar);//determina el origen en el que se encuentra el plano 
+        
+
+        /*console.log("vel x: " + velocidad.x);
+        console.log("vel y: " + velocidad.y);
+        console.log("vel z: " + velocidad.z);*/
+        
+        var siguiente_origen_modelo = mulVector4Matriz4(sumaVec3(this.origen,Vec3MulEscalar(this.velocidad_objeto,delta_t)),this.mundoalmodelar);//Metodo de euler para determinar la siguiente posicion del plano
         var siguiente_posicion = sumaVec3(posicion,Vec3MulEscalar(velocidad,delta_t)); //Metodo de euler
         
-        var siguiente_origen_posicion = restaVec3(siguiente_posicion,modelo_origen);
-        var offset = productoPunto(restaVec3(posicion,modelo_origen),this.normal);
-        var offset_siguiente = productoPunto(restaVec3(siguiente_posicion,siguiente_origen_modelo),this.normal);
+        /*if(this.normal.x<0){
+            this.normal.x = -this.normal.x;
+            
+        }
+        if(this.normal.y>0){
+            this.normal.y = -this.normal.y;
+        }*/
+        
+        //Compruebe si siguiente_posicion entra en el plano infinito
+        //var siguiente_origen_posicion = restaVec3(siguiente_posicion,modelo_origen);
+        var offset = productoPunto(restaVec3(posicion,modelo_origen),this.normal);//Revisa la proyeccion de la posicion particula y posicion del plano
+        var offset_siguiente = productoPunto(restaVec3(siguiente_posicion,siguiente_origen_modelo),this.normal);//Revisa la siguiente proyeccion de la posicion particula y posicion del plano 
         
         if(Math.abs(offset) < this.superficie_offset || offset * offset_siguiente < 0){
-           console.log("Si se proyecta al plano");
-           var siguiente_posicion_plano = restaVec3(siguiente_origen_posicion, Vec3MulEscalar(this.normal,productoPunto(siguiente_origen_posicion,this.normal))); //vec3
-           var proj_u = productoPunto(siguiente_posicion_plano,this.borde_u);    
-           var proj_v = productoPunto(siguiente_posicion_plano,this.borde_v); 
-           if(proj_u > 0 && proj_u < length2(this.borde_u) && proj_v > 0 && proj_v < length2(this.borde_v) ){
-              //colision con friccion
                var normal_externa;
+               
                if(productoPunto(restaVec3(posicion,modelo_origen),this.normal) > 0){
                   normal_externa = this.normal; 
-               }else{
-                   normal_externa = Vec3MulEscalar(this.normal,-1);
+                } else{
+                  normal_externa = Vec3MulEscalar(this.normal,-1);
                }
                
                var v_n = productoPunto(velocidad_rel,normal_externa);
                var tangente_velocidad = restaVec3(velocidad_rel,Vec3MulEscalar(normal_externa,v_n));
                var mag_tangente_velocidad = length(tangente_velocidad);
                
-               if(mag_tangente_velocidad <= (-this.mu * v_n)){
-                   return sumaVec3(this.velocidad_objeto, new THREE.Vector3());
+               if(mag_tangente_velocidad <= -1 * this.mu * v_n){
+                   //console.log("Colision estatica");
+                   return sumaVec3(this.velocidad_objeto, new THREE.Vector3(0,0,0));
                }else{
+                   //console.log("Colision dinamica");
                    return sumaVec3(this.velocidad_objeto, Vec3MulEscalar(tangente_velocidad,(1 + this.mu * v_n / mag_tangente_velocidad)));
                }
-            }
+            //}
         } 
-        
+        //console.log("No hay colision");
         return velocidad;
     }
+    
+
     
     render(){
         var modelo = trasladarMat4(new THREE.Matrix4(),this.origen);

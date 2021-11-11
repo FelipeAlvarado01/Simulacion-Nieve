@@ -35,6 +35,7 @@ class Simulacion{
     
     cargarColisionObjeto(objeto){
         this.colision_objecto = objeto;
+        //console.log("tam colision objetos: "+this.colision_objecto.length);
     }
     
     dibujarContenido(){
@@ -59,6 +60,7 @@ class Simulacion{
         var todas_particulas = grid.todas_particulas;
 
         //console.log("tamArray Todas las particulas: "+ todas_particulas.length);
+        //for(var i=0;i<todas_particulas.length;i++){
         for(var i=0;i<todas_particulas.length;i++){
             
             var len = todas_particulas[i].cbrt_volumen;
@@ -67,6 +69,8 @@ class Simulacion{
             modelo_particula = mulMatriz4(modelo_particula,this.modeloalmundo);
             modelo_particula = mulMatriz4(modelo_particula,trasladarMat4(new THREE.Matrix4(), todas_particulas[i].posicion));
             
+            
+           
             //var modelo_particula = trasladarMat4(new THREE.Matrix4(), todas_particulas[i].posicion);
             var geoPunto = new THREE.Geometry();//Se crean las particulas de nieve
             geoPunto.vertices.push(new THREE.Vector3(0,0,0));
@@ -74,6 +78,10 @@ class Simulacion{
             var punto = new THREE.Points(geoPunto,matPunto);
             punto.applyMatrix(modelo_particula);				//Aplicar la matriz de traslación al objeto				
             punto.elementsNeedUpdate = true;
+            
+            //console.log("pos x: "+ punto.position.x + " de la particula #"+i);
+            //console.log("pos y: "+ punto.position.y + " de la particula #"+i);
+            //console.log("pos z: "+ punto.position.z + " de la particula #"+i);
             
             /*const geometry = new THREE.BoxGeometry(len, len, len);
             const material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
