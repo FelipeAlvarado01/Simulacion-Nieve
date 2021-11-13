@@ -46,61 +46,45 @@ class Simulacion{
                         this.colision_objecto[j].actualizar_posicion(this.delta_t);
                     }
                 }
-                //console.log("Si estoy dibujando contenido");
-                grid.simular(this.delta_t, this.aceleracion_externa,this.colision_objecto, this.parametros);
-
+                console.log("Si estoy simulando");
+                this.grid.simular(this.delta_t, this.aceleracion_externa,this.colision_objecto, this.parametros);
             }
         }
         
         //Actualizar la posicion de la particula
+        
         this.dibujarParticulas(); 
+        //this.dibujarNodoGrid();
     }
     
     dibujarParticulas(){
         var todas_particulas = grid.todas_particulas;
-
-        //console.log("tamArray Todas las particulas: "+ todas_particulas.length);
-        //for(var i=0;i<todas_particulas.length;i++){
+        //console.log("Tamaño de todas las particulas: "+todas_particulas.length);
+        
         for(var i=0;i<todas_particulas.length;i++){
-            
+            //console.log("si");
+            //console.log("pos x: "+todas_particulas[i].posicion.x);
+            //console.log("pos y: "+todas_particulas[i].posicion.y);
+            //console.log("pos z: "+todas_particulas[i].posicion.z);
             var len = todas_particulas[i].cbrt_volumen;
+            
             var modelo_particula = new THREE.Matrix4();
-            //modelo_particula = scale(modelo_particula, new THREE.Vector3(len, len, len));
+            
             modelo_particula = mulMatriz4(modelo_particula,this.modeloalmundo);
             modelo_particula = mulMatriz4(modelo_particula,trasladarMat4(new THREE.Matrix4(), todas_particulas[i].posicion));
             
-            
-           
-            //var modelo_particula = trasladarMat4(new THREE.Matrix4(), todas_particulas[i].posicion);
             var geoPunto = new THREE.Geometry();//Se crean las particulas de nieve
             geoPunto.vertices.push(new THREE.Vector3(0,0,0));
             var matPunto = new THREE.PointsMaterial( {color:0xDBDBDB } );
             var punto = new THREE.Points(geoPunto,matPunto);
             punto.applyMatrix(modelo_particula);				//Aplicar la matriz de traslación al objeto				
             punto.elementsNeedUpdate = true;
-            
-            //console.log("pos x: "+ punto.position.x + " de la particula #"+i);
-            //console.log("pos y: "+ punto.position.y + " de la particula #"+i);
-            //console.log("pos z: "+ punto.position.z + " de la particula #"+i);
-            
-            /*const geometry = new THREE.BoxGeometry(len, len, len);
-            const material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
-            const cube = new THREE.Mesh( geometry, material );
-            cube.applyMatrix(modelo_particula);				
-            cube.elementsNeedUpdate = true;*/
 
             scene.add(punto);
             this.objetos_en_escena.push(punto);
             
+            //console.log("Se dibujo la particula");  
         }
-        
-        /*for(var i=0;i<this.objetos_en_escena.length;i++){
-            scene.add(this.objetos_en_escena[i]);
-            console.log("pos x: "+ this.objetos_en_escena[i].position.x + " de la particula # "+i);
-            console.log("pos y: "+ this.objetos_en_escena[i].position.y + " de la particula # "+i);
-            console.log("pos z: "+ this.objetos_en_escena[i].position.z + " de la particula # "+i);
-        }*/
-         
     }
     
     eliminarObjetosEscena(){
@@ -111,13 +95,41 @@ class Simulacion{
     }
     
     /*dibujarGrid(){
-        
+       const size = 10;
+       const divisions = 10;
+       const gridHelper = new THREE.GridHelper( size, divisions );
+       scene.add( gridHelper ); 
     }*/
-    /*dibujarNodoGrid(){
+    
+    dibujarNodoGrid(){
+        this.grid.eliminarNodosNoUsados();
+        this.grid.resetearGrid();
         
+        for(var i=0;i<this.grid.nodos_en_uso.length;i++){
+            console.log("si grafica nodos grid");
+            if(this.grid.nodos_en_uso[i].particulas.length > 0){
+                
+               
+                var len = this.grid.h; 
+                var centro_nodo = Vec3MulEscalar(sumaVec3(this.grid.nodos_en_uso[i].index,new THREE.Vector3(0.5,0.5,0.5)),this.grid.h);
+                
+                var modelo_nodo = new THREE.Matrix4();
+                modelo_nodo = mulMatriz4(modelo_nodo,this.modeloalmundo);
+                modelo_nodo = mulMatriz4(modelo_nodo,trasladarMat4(new THREE.Matrix4(), centro_nodo));
+                
+                var geoPunto = new THREE.Geometry();//Se crean las particulas de nieve
+                geoPunto.vertices.push(new THREE.Vector3(0,0,0));
+                var matPunto = new THREE.PointsMaterial( {color:0xDBDBDB } );
+                var punto = new THREE.Points(geoPunto,matPunto);
+                punto.applyMatrix(modelo_nodo);//Aplicar la matriz de traslación al objeto				
+                punto.elementsNeedUpdate = true;
+                scene.add(punto); 
+            }  
+            
+        }
     }
     
-    dibujarFuerzaGrid(){
+    /*dibujarFuerzaGrid(){
         
     }
     

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simulacion de nieve</title>
+      <style>
+      <style>
+            html, body { margin: 0; padding: 0; overflow: hidden; }
+            #info {
+                position: absolute;
+                width: 100%;
+                text-align: center;
+                color: #FFFFFF;
+            }
+        </style>
+  </head>
+  <body>
+
+  
+   <!--Librerias de graficacion-->
+    <script src="js/three.min.js"></script>
+    <script src='js/libs/dat.gui.min.js'></script>
+    <script src="js/controls/OrbitControls.js"></script>
+    
+    <!--Librerias algebraicas para matrices-->
+    <script src="https://unpkg.com/svd-js" type="application/javascript"></script>
+    <script src="https://unpkg.com/lightmatrix/dist/lightmatrix.js"></script>
+     
+    <!--Librerias para la simulacion-->
+    <script src="Escena.js"></script>
+    <script src= "CrearEsferaParticulas.js"></script>
+    <script src="OperacionesVectoresMatrices.js"></script>
+    <script src="ParametrosFisicos.js"></script>
+    <script src="Interpolacion.js"></script>
+    <script src="Particula.js"></script>
+    <script src="Fuerzas.js"></script>
+    <script src="Grid.js"></script>
+    <script src="Planos.js"></script>
+    <script src="PlanosPrueba.js"></script>
+    <script src="Simulacion.js"></script>
+   <!-- <script src="main.js"></script>-->
+    
+    <script>
+    //Creacion de atributos de la simulacion
+	
+	init();
+	animate();
+    render();
+		
+	function init(){
+
+
+        var nodos = new Array(30); 
+        for(var i=0; i<nodos.length; i++) {
+            var nodos[i] = new Array(30);
+            for(var j=0; j<this.nodos[i].length; j++) {
+                var nodos[i][j] = new Array(30);
+            }
+        }
+        
+        for(var i=0; i<nodos.length; i++) {
+            for(var j=0; j<this.nodos[i].length; j++) {
+                for(var k=0; k<this.nodos[i][j].length; k++) {
+                    this.nodos[i][j][k] = new GridNode();
+                }
+            }
+        }
+    }    
+        
+	function animate() {
+        
+        requestAnimationFrame( animate );
+        renderer.render( scene, camera );
+        render();
+	}
+
+	function render(){
+
+    }
+	
+	
+    </script>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-class Planos{
+class PlanosPrueba{
                 //vec3,  vec3,   vec3,  float,   mat4,           mat4,  new THREE.Color(hex)
     constructor(origen, borde_u, borde_v, mu, modeloalmundo, mundoalmodelar,color){
             // atributos del cubo 
@@ -9,8 +9,12 @@ class Planos{
             this.borde_v = borde_v;
         
             this.normal = normalizacion(productoCruz(borde_u,borde_v));
-
-            this.mu = mu;     // friction coefficient_float
+        
+            this.plano = new Plane(this.normal,0);
+            
+            scene.add( this.plano );
+            
+            /*this.mu = mu;     // friction coefficient_float
 
             this.velocidad_objeto = new THREE.Vector3(0,0,0); //Inicializa la velocidad en 0,0,0
         
@@ -43,13 +47,13 @@ class Planos{
 			var matPlano = new THREE.MeshBasicMaterial({vertexColors: THREE.FaceColors});
 			this.plano = new THREE.Mesh(geoPlano,matPlano);
 			this.render();
-			scene.add( this.plano );   
+			scene.add( this.plano );  */ 
     }
     
     
      //Metodos de los planos
 
-    /*choque(posicion, velocidad, delta_t){
+    choque(posicion, velocidad, delta_t){
         
         var velocidad_rel = restaVec3(velocidad,this.velocidad_objeto);
         var modelo_origen = mulVector4Matriz4(this.origen,this.mundoalmodelar);//determina el origen en el que se encuentra el plano 
@@ -99,24 +103,24 @@ class Planos{
         } 
         //console.log("No hay colision");
         return velocidad;
-    }*/
+    }
 
-        choque(posicion, velocidad, delta_t){
+        /*choque(posicion, velocidad, delta_t){
         
         var velocidad_rel = restaVec3(velocidad,this.velocidad_objeto);
         var modelo_origen = mulVector4Matriz4(this.origen,this.mundoalmodelar);//determina el origen en el que se encuentra el plano 
         
-        //console.log("modelo_origen x: " + modelo_origen.x);
-        //console.log("modelo_origen y: " + modelo_origen.y);
-        //console.log("modelo_origen z: " + modelo_origen.z);
+        console.log("modelo_origen x: " + modelo_origen.x);
+        console.log("modelo_origen y: " + modelo_origen.y);
+        console.log("modelo_origen z: " + modelo_origen.z);
         
         var siguiente_origen_modelo = mulVector4Matriz4(sumaVec3(this.origen,Vec3MulEscalar(this.velocidad_objeto,delta_t)),this.mundoalmodelar);//Metodo de euler para determinar la siguiente posicion del plano
         var siguiente_posicion = sumaVec3(posicion,Vec3MulEscalar(velocidad,delta_t)); //Metodo de euler
         
             
-        //console.log("siguiente_origen_modelo x: " + siguiente_origen_modelo.x);
-        //console.log("siguiente_origen_modelo y: " + siguiente_origen_modelo.y);
-        //console.log("siguiente_origen_modelo z: " + siguiente_origen_modelo.z);
+        console.log("siguiente_origen_modelo x: " + siguiente_origen_modelo.x);
+        console.log("siguiente_origen_modelo y: " + siguiente_origen_modelo.y);
+        console.log("siguiente_origen_modelo z: " + siguiente_origen_modelo.z);
             
         //Compruebe si siguiente_posicion entra en el plano infinito
         //var siguiente_origen_posicion = restaVec3(siguiente_posicion,modelo_origen);
@@ -148,7 +152,7 @@ class Planos{
         } 
         //console.log("No hay colision");
         return velocidad;
-    }
+    } */
 
     
     render(){
@@ -156,6 +160,9 @@ class Planos{
         this.plano.applyMatrix(modelo);
         this.plano.elementsNeedUpdate = true;
         
+        //console.log("pos plano x: "+this.plano.position.x);
+        //console.log("pos plano y: "+this.plano.position.y);
+        //console.log("pos plano z: "+this.plano.position.z);
     }
     es_estacionaria(){
         return false;

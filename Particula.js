@@ -1,10 +1,11 @@
 class Particula{
 	//Constructor de la clase Particula. Se crean todos los atributos dentro
-	constructor(posicion,res, masa,h){
+	constructor(posicion,masa, res,h){
         //Creacion de atributos de la particula
         this.posicion = posicion; //Posicion, recibe un vector de que recibe x,y,z
         this.velocidad; //Velocidad, recibe un vector de que recibe x,y,z
         this.res = res;
+        //console.log("res: "+ this.res.x)
         this.masa = masa;	
         this.h = h;
         
@@ -51,23 +52,20 @@ class Particula{
     los valores de lo y hi se toman de la posicion de la particula
     */
     Calculos_limites_vencidad(){
-       //round es para dejar el numero entero
-       this.i_lo = Math.round(Math.max(Math.ceil(this.posicion.x/this.h-2),0));
-       this.i_hi = Math.round(Math.min(Math.floor(this.posicion.x/this.h+2) + 1,this.res.x));
-       this.j_lo = Math.round(Math.max(Math.ceil(this.posicion.y/this.h-2),0));
-       this.j_hi = Math.round(Math.min(Math.floor(this.posicion.y/this.h+2) + 1,this.res.y));
-       this.k_lo = Math.round(Math.max(Math.ceil(this.posicion.z/this.h-2),0));
-       this.k_hi = Math.round(Math.min(Math.floor(this.posicion.z/this.h+2) + 1,this.res.z)); 
+       this.i_lo = Math.max(Math.ceil(this.posicion.x/this.h - 2),0);
+       this.i_hi = Math.min(Math.floor(this.posicion.x/this.h + 2) + 1,this.res.x);
+       this.j_lo = Math.max(Math.ceil(this.posicion.y/this.h - 2),0);
+       this.j_hi = Math.min(Math.floor(this.posicion.y/this.h + 2) + 1,this.res.y);
+       this.k_lo = Math.max(Math.ceil(this.posicion.z/this.h - 2),0);
+       this.k_hi = Math.min(Math.floor(this.posicion.z/this.h + 2) + 1,this.res.z); 
     }
     
     Calculos_gradiente_b_spline(){
         for( var dest_i=this.i_lo; dest_i<this.i_hi ; dest_i++){
             for(var dest_j=this.j_lo; dest_j<this.j_hi ; dest_j++){
                 for(var dest_k=this.k_lo; dest_k<this.k_hi ; dest_k++){ 
-                    //vector_particual/h-vector_des
-                    //var scaled = this.posicion.divideScalar(this.h).sub(new THREE.Vector3(dest_i, dest_j, dest_k));
                     var scaled = Vec3SubVec3(Vec3DivEscalar(this.posicion,this.h),new THREE.Vector3(dest_i, dest_j, dest_k));
-                    this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Funcion b_spline proviene de interpolacion.js
+                    this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Funcion b_spline proviene de interpolacion.js          
                     this.val_grad_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline_grad(scaled, this.h); //Funcion b_spline_grad proviene de interpolacion.js  
                 }
             }
@@ -75,6 +73,8 @@ class Particula{
     }
     
     B_spline_en(grid_i, grid_j, grid_k){
+        //console.log("b_spline_en grid_i: "+grid_i);
+        //console.log("b_spline_en this.i_lo: "+this.i_lo);
         return this.val_b_spline[grid_i - this.i_lo][grid_j - this.j_lo][grid_k - this.k_lo];
     }
     

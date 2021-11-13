@@ -35,6 +35,7 @@
     <script src="Fuerzas.js"></script>
     <script src="Grid.js"></script>
     <script src="Planos.js"></script>
+    <script src="PlanosPrueba.js"></script>
     <script src="Simulacion.js"></script>
    <!-- <script src="main.js"></script>-->
     
@@ -53,8 +54,12 @@
 
     var mu = 1.0; // static friction
 
-    var num_particulas = 10;
+    var num_particulas = 1e-1;
 
+    n_func_init();
+    n_func_derivative_init();
+
+        
     var res_x = 30;
     var res_y = 30;
     var res_z = 30;
@@ -70,7 +75,7 @@
     var mundoalmodelo = new THREE.Matrix4();
     mundoalmodelo = trasladarMat4(mundoalmodelo,new THREE.Vector3(grid.dim_x / 2, 0, grid.dim_z / 2));    
     var modeloalmundo = new THREE.Matrix4();
-    modeloalmundo = trasladarMat4(modeloalmundo,new THREE.Vector3(-grid.dim_x / 2, 0, -grid.dim_z / 2))
+    modeloalmundo = trasladarMat4(modeloalmundo,new THREE.Vector3(-grid.dim_x / 2, 0, -grid.dim_z / 2));
 
 
     //Se crean las particulas de la simulacion
@@ -90,10 +95,11 @@
         //Creacion de la escena 3D
         creacion();
         
+        
         //Construccion de la caja que contendra la simulacion
         var mu = 0.2;
         var color_suelo = new THREE.Color(0x544F4F); //Color del suelo
-        var origen = new THREE.Vector3(-1 * grid.dim_x/2.0,0, -1 * grid.dim_z/2.0);
+        var origen = new THREE.Vector3(-1 * grid.dim_x/2,0, -1 * grid.dim_z/2);//(-2.5,0,-2.5)
         var eje_x = new THREE.Vector3(grid.dim_x,0,0);//(5,0,0)
         var eje_y = new THREE.Vector3(0,grid.dim_y,0);//(0,5,0)
         var eje_z = new THREE.Vector3(0,0,grid.dim_z);//(0,0,5)
@@ -103,28 +109,25 @@
         var color_caras = new THREE.Color(0xD7C3F3);
         var o_eje_x = sumaVec3(origen,eje_x);
         var o_eje_z = sumaVec3(origen,eje_z);
-        var cara_1 = new Planos(origen,eje_x,eje_y,mu,modeloalmundo,mundoalmodelo,color_caras);
-        //cara en -z
+        var cara_1 = new Planos(origen,eje_x,eje_y,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en -z
         var cara_2 = new Planos(origen,eje_z,eje_y,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en -x
         var cara_3 = new Planos(o_eje_x,eje_y,eje_z,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en x
         var cara_4 = new Planos(o_eje_z,eje_x,eje_y,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en z
 
         //cargamos los objetos en el array 
         objetos.push(suelo);
-        /*objetos.push(cara_1);
-        objetos.push(cara_2);
-        objetos.push(cara_3);
-        objetos.push(cara_4);*/
+        //objetos.push(cara_1);
+        //objetos.push(cara_2);
+        //objetos.push(cara_3);
+        //objetos.push(cara_4);
 
         //Construccion de la cuña
         var color_cunia = new THREE.Color('skyblue');
-        var color_cunia2 = new THREE.Color('red');
-        var esquina =  new THREE.Vector3(0,-0.05*grid.dim_y,-grid.dim_z/2);//(0,-0.25,-2.5)
+        var esquina =  new THREE.Vector3(0,grid.dim_y/2,-grid.dim_z/2.5);//(0,2.5,-2)
         var borde_superior = new THREE.Vector3(0, 0, 0.8 * grid.dim_z);//(0,0,4)
         var borde1 = new THREE.Vector3(0.15*grid.dim_x, -0.15*grid.dim_y, 0);//(0.75,-0.75,0)
         var borde2 = new THREE.Vector3(-0.15*grid.dim_x, -0.15*grid.dim_y, 0);//(-0.75,-0.75,0)
         //var borde3 = new THREE.Vector3(0.75, 0.75, 0);
-        var borde3 = new THREE.Vector3(0.75, 0, 0);
         var cunia_1 = new Planos(esquina,borde1,borde_superior,mu,modeloalmundo,mundoalmodelo,color_cunia);
         var cunia_2 = new Planos(esquina,borde_superior,borde2,mu,modeloalmundo,mundoalmodelo,color_cunia);
         
@@ -138,20 +141,17 @@
         nievesim.dibujarContenido();  
         
     }    
+
+	function render(){
+      //nievesim.eliminarObjetosEscena();
+      //nievesim.dibujarContenido();  
+    }
         
-	function animate() {
-        
+    function animate() {
         requestAnimationFrame( animate );
         renderer.render( scene, camera );
         render();
 	}
-
-	function render(){
-      //console.log("Tam objetos: "+objetos.length);
-      nievesim.eliminarObjetosEscena();
-      nievesim.dibujarContenido();  
-      
-    }
 	
 	
     </script>

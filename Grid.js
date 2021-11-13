@@ -2,16 +2,18 @@
 class GridNode{
     //Atributos del nodo
     constructor(){
-        this.index;	// the {i, j, k} index of the grid node es un vector
-        this.masa;			// interpolated mass
-        this.velocidad;		// interpolated velocity
-        this.siguiente_velocidad; // for part 4, 5, 6
-        this.fuerza;
+        this.index = new THREE.Vector3();	// the {i, j, k} index of the grid node es un vector
+        this.masa = new THREE.Vector3();			// interpolated mass
+        this.velocidad = new THREE.Vector3();		// interpolated velocity
+        this.siguiente_velocidad = new THREE.Vector3(); // for part 4, 5, 6
+        this.fuerza = new THREE.Vector3();
         /*
             Aquí es donde se guardaran los objetos pariculas
             Array de tamaño dinamico (no definido);
         */
         this.particulas = new Array();  
+        
+        //console.log("pariculas longitud: " + this.particulas.length );
     }
 }
 
@@ -34,25 +36,27 @@ class Grid{
        this.steps_since_node_reset = 0;
        this.reset_time = 0.1; 
         
-       
-
-       //this.nodos_en_uso = new Map();
-        
         /**
         Array multidimensional para los nodos
         Se define la grid para realizar los calculos
         Guardara valores del objeto GridNode
         **/
+        
         this.todas_particulas = new Array(); //Guardar objetos particulas
-        this.nodos = new Array(this.res_x); 
+        this.nodos_en_uso = new Array(); 
+        
+        this.nodos = new Array(res_x); 
         for(var i=0; i<this.nodos.length; i++) {
-            this.nodos[i] = new Array(this.res_y);
+            this.nodos[i] = new Array(res_y);
             for(var j=0; j<this.nodos[i].length; j++) {
-                this.nodos[i][j] = new Array(this.res_z);
+                this.nodos[i][j] = new Array(res_y);
             }
         }
+        //if(this.nodos[1][1][1] == null){
+          //  console.log("Si es vacio");
+        //}
         
-        for(var i=0; i<this.nodos.length; i++) {
+        /*for(var i=0; i<this.nodos.length; i++) {
             for(var j=0; j<this.nodos[i].length; j++) {
                 for(var k=0; k<this.nodos[i][j].length; k++) {
                     this.nodos[i][j][k] = new GridNode();
@@ -60,74 +64,92 @@ class Grid{
             }
         }
         
-        this.nodos_en_uso = new Array();     
+        if(this.nodos[1][1][1] == null){
+            console.log("Si es vacio");
+        }else{
+             console.log("NO es vacio");
+        }
+        
+        
+        if(this.nodos[1][1][1].particulas == null){
+            console.log("Si es vacio particulas");
+        }else{
+             console.log("NO es vacio particulas");
+        }*/   
     }
     
     resetearGrid(){
+        //console.log("Si estoy reseteando");
         for(var i=0;i<this.nodos_en_uso.length;i++){
            this.nodos_en_uso[i].masa = 0
            this.nodos_en_uso[i].velocidad = new THREE.Vector3();
            this.nodos_en_uso[i].siguiente_velocidad = new THREE.Vector3();
            this.nodos_en_uso[i].fuerza = new THREE.Vector3();
-           //this.nodos_en_uso[i].particulas.length = 0; //Se limpia el array de particula
-           this.nodos_en_uso[i].particulas = 0 ;
+           this.nodos_en_uso[i].particulas.length = 0; //Se limpia el array de particula
+           //this.nodos_en_uso[i].particulas = 0 ;
         } 
         
         for(var i=0;i<this.todas_particulas.length;i++){
             this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas[i].posicion,Vec3SubEscalar(new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z),1e-5))); //subScalar resta un escalar a un vector
             
-            //var index = this.todas_particulas[i].posicion.divideScalar(this.h).floor();
             var index = Vec3DivEscalar(this.todas_particulas[i].posicion,this.h).floor();
-            
-            //console.log("val h: "+ this.h);
-            //console.log("index x: "+ index.x);
-            //console.log("index y: "+ index.y);
-            //console.log("index z: "+ index.z);
-            
+             
             this.todas_particulas[i].Calculos_limites_vencidad();
             this.todas_particulas[i].Calculos_gradiente_b_spline();
-            
-            
+             
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
                         var nodo = this.nodos[dest_i][dest_j][dest_k];
                         if(nodo == null){
+                           //console.log("Este nodo esta vacio");
                            nodo =  new GridNode();
                            //nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor();
                            nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k);
                            this.nodos[dest_i][dest_j][dest_k] = nodo;
                         }
-                        this.nodos_en_uso.push(nodo); //Sellena el array nodos_en_uso
+                        this.nodos_en_uso.push(nodo); //Se llena el array nodos_en_uso
+                        //console.log("si");
                     }
                 }
             }
-            var nodo = this.nodos[index.x][index.y][index.z]; //Es una variable que almacenara el objeto NodoGrid
-            nodo.particulas.push(this.todas_particulas[i]); //Ingresa a su atributo particulas
+            
+            //this.nodos[index.x][index.y][index.z] = new GridNode();; //Es una variable que almacenara el objeto NodoGrid
+            //var nodo_particulas =this.nodos[index.x][index.y][index.z]; //Es una variable que almacenara el objeto NodoGrid
+            //nodo_particulas.particulas.push(this.todas_particulas[i]); //Ingresa a su atributo particulas
+
         }
+        
+        console.log("Si hago reset");
     }
     
     //Elimina los nodos no usados
     eliminarNodosNoUsados() { 
         for (var i=0;i<this.nodos_en_uso.length;i++) {
-            //var index = this.nodos_en_uso[i].index.floor();
+            
+            console.log("Si hay elementos en el nodo en uso");
             var index = Vec3Floor(this.nodos_en_uso[i].index);
             this.nodos[index.x][index.y][index.z] = null;
             this.nodos_en_uso[i] = null; //Elimina los elementos del array 
         }
+       
         this.nodos_en_uso.length = 0; //Se limpia el array
+   
     }
 
     //Se llaman los demas metodo de la clase Grid
     simular(delta_t, aceleracion_externa, colision_objetos, parametros){
-       this.steps_since_node_reset++; 
         
+        console.log("Si estoy haciendo simulacion");
+       this.steps_since_node_reset++; 
+        console.log("reset_time / delta_t: "+ this.reset_time / delta_t);
         if (this.steps_since_node_reset > this.reset_time / delta_t) {
+            console.log("Entranado para eliminar nodos no usados");
             this.eliminarNodosNoUsados();
             this.steps_since_node_reset = 0;
         }
-        
+        //console.log("Si estoy haciendo simulacion");
         this.resetearGrid();
         
         this.particulaAlaGrid()  //Paso 1
@@ -160,6 +182,8 @@ class Grid{
         this.calcular_colision_particula(delta_t,colision_objetos);           // Paso 9.
         
         this.actulizar_posicion_particula(delta_t);           // Paso 10.
+        
+        
     }   
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,16 +193,25 @@ class Grid{
             
             var pos = this.todas_particulas[i].posicion;
             
+            //console.log(this.todas_particulas[i].i_lo);
+            //console.log(this.todas_particulas[i].i_hi);
+            
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
                         var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);//Es un valor flotante
+                        //console.log("peso: "+ this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k));
                         this.nodos[dest_i][dest_j][dest_k].masa += peso * this.todas_particulas[i].masa; //m = sumatoria mi*Wi
                         
                         //var resultMul = this.todas_particulas[i].velocidad.multiplyScalar(peso * this.todas_particulas[i].masa);  
                         var resultMul = Vec3MulEscalar(this.todas_particulas[i].velocidad, peso * this.todas_particulas[i].masa); 
                         this.nodos[dest_i][dest_j][dest_k].velocidad = sumaVec3(this.nodos[dest_i][dest_j][dest_k].velocidad,resultMul);  //v=sumatoria mp*Wi/mi
+                        
+                        /*console.log("dest_i :"+dest_i);
+                        console.log("dest_j :"+dest_j);
+                        console.log("dest_k :"+dest_k);
+                        console.log("hice el primer paso");*/
                         
                     }
                 }
@@ -303,18 +336,15 @@ class Grid{
             var posicion = Vec3MulEscalar(this.nodos_en_uso[i].index,this.h);
             
             for(var j=0;j< colision_objetos.length;j++){
-                console.log("objeto en colision no."+j);
+                //console.log("objeto en colision no."+j);
                 this.nodos_en_uso[i].siguiente_velocidad = colision_objetos[j].choque(posicion, this.nodos_en_uso[i].siguiente_velocidad, delta_t);
-                console.log("Siguiente velocidad: "+this.nodos_en_uso[i].siguiente_velocidad);
+                //console.log("Siguiente velocidad: "+this.nodos_en_uso[i].siguiente_velocidad);
             }
         }
     }
-    
-    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Sexto paso - Resolver el sistema lineal
-    
-     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     //Septimo paso - Actualizar los gradientes de deformación para cada partícula
     
