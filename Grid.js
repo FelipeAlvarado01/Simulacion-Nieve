@@ -6,12 +6,12 @@ class GridNode{
         this.masa = 0;			// interpolated mass
         this.velocidad = new THREE.Vector3();		// interpolated velocity
         this.siguiente_velocidad = new THREE.Vector3(); // for part 4, 5, 6
-        this.fuerza = new THREE.Vector3();
+        this.fuerza = new THREE.Vector3(0,0,0);
         /*
             Aquí es donde se guardaran los objetos pariculas
             Array de tamaño dinamico (no definido);
         */
-        this.particulas = new Array();  
+        //this.particulas = new Array();  
         
         //console.log("pariculas longitud: " + this.particulas.length );
     }
@@ -80,103 +80,60 @@ class Grid{
         }*/   
     }
     
-    resetearGrid(){
-        //console.log("Si estoy reseteando");
-        for(var i=0;i<this.nodos_en_uso.length;i++){
-           this.nodos_en_uso[i].masa = 0
-           this.nodos_en_uso[i].velocidad = new THREE.Vector3(0,0,0);
-           this.nodos_en_uso[i].siguiente_velocidad = new THREE.Vector3(0,0,0);
-           this.nodos_en_uso[i].fuerza = new THREE.Vector3(0,0,0);
-           this.nodos_en_uso[i].particulas.length = 0; //Se limpia el array de particula
-        } 
-        this.nodos_en_uso.length = 0;
-        
-        for(var i=0;i<this.todas_particulas.length;i++){
-            this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas[i].posicion,Vec3SubEscalar(new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z),1e-5))); //subScalar resta un escalar a un vector
-            
-            var index = Vec3DivEscalar(this.todas_particulas[i].posicion,this.h).floor();
-            
-            //console.log("index x: ",index.x);
-            //console.log("index y: ",index.y);
-            //console.log("index z: ",index.z);
-             
-            this.todas_particulas[i].Calculos_limites_vencidad();
-            this.todas_particulas[i].Calculos_gradiente_b_spline();
-             
-            for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
-                for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
-                    for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
-                        //console.log("reset-dest_i: ",dest_i);
-                        //console.log("dest_j: ",dest_j);
-                        //console.log("dest_k: ",dest_k);
-                        var nodo = this.nodos[dest_i][dest_j][dest_k];
-                        if(nodo == null){
-                           nodo =  new GridNode();
-                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor();
-                           this.nodos[dest_i][dest_j][dest_k] = nodo;
-                        }
-                        
-                        this.nodos_en_uso.push(nodo);
-                        //this.nodos_en_uso.push(nodo); //Se llena el array nodos_en_uso
-                        /*if(this.nodos_en_uso.length<1){
-                            this.nodos_en_uso.push(nodo);
-                            console.log("Si");
-                        }
-                        else{
-                            set(nodo,this.nodos_en_uso);
-                            console.log("No");
-                        }*/
-                    }
-                }
-            }
-            //console.log("posicion particula x: ",this.todas_particulas[i].posicion.x);
-            //this.nodos[index.x][index.y][index.z] = new GridNode(); //Es una variable que almacenara el objeto NodoGrid
-            //this.nodos[index.x][index.y][index.z].particulas.push(this.todas_particulas[i]); //Ingresa a su atributo particulas
-            
-            this.nodos[index.x][index.y][index.z]; //Es una variable que almacenara el objeto NodoGrid
-            this.nodos[index.x][index.y][index.z].particulas.push(this.todas_particulas[i]);
-            /*console.log("masa: ", this.nodos[index.x][index.y][index.z].masa);
-            var ultimoElemento = this.nodos[index.x][index.y][index.z].particulas.length;
-            console.log("par x: ", this.todas_particulas[i].posicion.x);
-            console.log("par y: ", this.todas_particulas[i].posicion.y);
-            console.log("par z: ", this.todas_particulas[i].posicion.z);
-            console.log("Pos particulas x: ", this.nodos[index.x][index.y][index.z].particulas[ultimoElemento-1].posicion.x);
-            console.log("Pos particulas y: ", this.nodos[index.x][index.y][index.z].particulas[ultimoElemento-1].posicion.y);
-            console.log("Pos particulas z: ", this.nodos[index.x][index.y][index.z].particulas[ultimoElemento-1].posicion.z);
-            console.log("index x: "+this.nodos[index.x][index.y][index.z].index.x);
-            console.log("index y: "+this.nodos[index.x][index.y][index.z].index.y);
-            console.log("index z: "+this.nodos[index.x][index.y][index.z].index.z);*/
-
-        }
-        
-        //console.log("Si hago reset");
-    }
-    
-    //Elimina los nodos no usados
+        //Elimina los nodos no usados, es decir solo los que han sido guardador en nodos en uso
     eliminarNodosNoUsados() { 
+        
         for (var i=0;i<this.nodos_en_uso.length;i++) {
-            
-            //console.log("Si hay elementos en el nodo en uso");
             var index = Vec3Floor(this.nodos_en_uso[i].index);
             this.nodos[index.x][index.y][index.z] = null;
             this.nodos_en_uso[i] = null; //Elimina los elementos del array 
         }
        
         this.nodos_en_uso.length = 0; //Se limpia el array
-   
+    }
+    
+    resetearGrid(){
+        var cont = 0;
+        //console.log("Si estoy reseteando");
+        for(var i=0;i<this.nodos_en_uso.length;i++){
+           this.nodos_en_uso[i].masa = 0
+           this.nodos_en_uso[i].velocidad = new THREE.Vector3(0,0,0);
+           this.nodos_en_uso[i].siguiente_velocidad = new THREE.Vector3(0,0,0);
+           this.nodos_en_uso[i].fuerza = new THREE.Vector3(0,0,0);
+        } 
+        this.nodos_en_uso.length = 0;
+        
+        for(var i=0;i<this.todas_particulas.length;i++){
+            this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas[i].posicion,Vec3SubEscalar(new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z),1e-5))); //subScalar resta un escalar a un vector
+            
+            this.todas_particulas[i].Calculos_limites_vencidad();
+            this.todas_particulas[i].Calculos_gradiente_b_spline();
+             
+            for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
+                for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
+                    for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
+                        var nodo = this.nodos[dest_i][dest_j][dest_k];
+                        if(nodo == null){
+                           nodo =  new GridNode();
+                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor();
+                           this.nodos[dest_i][dest_j][dest_k] = nodo;
+                        }
+                        set(nodo, this.nodos_en_uso);
+                        cont++;
+                    }
+                }
+            }
+        }
     }
 
     //Se llaman los demas metodo de la clase Grid
     simular(delta_t, aceleracion_externa, colision_objetos, parametros){
-        //console.log("Tam nodos en uso:"+this.nodos_en_uso.length);
-        //console.log("Tam nodos en uso:"+this.todas_particulas.length);
-        //Se usa para despues de cierto tiempo borre los nodos no usados y no tener que hacer todos los calculos de esos nodos no importantes despues de cierto timepo t
-        this.steps_since_node_reset++; 
-        //console.log("this.steps_since_node_reset: "+ this.steps_since_node_reset);
-        //if (this.steps_since_node_reset > this.reset_time / delta_t) {
+        
+        
+        if (this.steps_since_node_reset > this.reset_time / delta_t) {
             this.eliminarNodosNoUsados();
             this.steps_since_node_reset = 0;
-        //}
+        }
         //console.log("Si estoy haciendo simulacion");
         this.resetearGrid();
         
@@ -190,18 +147,18 @@ class Grid{
         
         this.calcular_F_hat_Ep(delta_t);           // Paso 3.
         
-        this.calculos_fuerza_grid(parametros.mu_0,parametros.lambda_0, parametros.xi);           // Paso 3.
+        //this.calculos_fuerza_grid(parametros.mu_0,parametros.lambda_0, parametros.xi);           // Paso 3.
         
         //aplicar_aceleracion_ext(aceleracion_externa);
         
-       // this.calcular_velocidades_grid(delta_t,colision_objetos);           // Paso 4-5.
+        this.calcular_velocidades_grid(delta_t,colision_objetos);           // Paso 4-5.
         
         
         this.actualizar_gradiente_deformacion(parametros.theta_c, parametros.theta_s, delta_t);           // Paso 7.
         
         this.actualizar_velocidad_particula(parametros.alpha);           // Paso 8.
         
-        console.log("velocidad particula: ",this.todas_particulas[0].velocidad);
+        
         var total_acc = new THREE.Vector3();
         for(var i=0;i<aceleracion_externa.length;i++){
             //console.log("aceleracion_externa.length: ",aceleracion_externa.length);
@@ -216,8 +173,6 @@ class Grid{
         this.calcular_colision_particula(delta_t,colision_objetos);           // Paso 9.
         
         this.actulizar_posicion_particula(delta_t);           // Paso 10.
-        
-        //console.log("Finalice calculos de simulacion");
     }   
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,12 +203,12 @@ class Grid{
             }
         }
         
-        for (var i=0;i<this.nodos_en_uso.length;i++) {
+        /*for (var i=0;i<this.nodos_en_uso.length;i++) {
             if (this.nodos_en_uso[i].masa > 0) {
                 //this.nodos_en_uso[i].velocidad = this.nodos_en_uso[i].velocidad.divideScalar(this.nodos_en_uso[i].masa);
                 this.nodos_en_uso[i].velocidad = Vec3DivEscalar(this.nodos_en_uso[i].velocidad,this.nodos_en_uso[i].masa);
             }
-        }      
+        }*/      
     } 
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -324,10 +279,9 @@ class Grid{
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         //console.log("fuerza: ",this.nodos[dest_i][dest_j][dest_k].fuerza);
+                        //console.log("fuerza en 3 1: ",this.nodos[dest_i][dest_j][dest_k].fuerza);
                        var peso_grad = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k);
                        this.nodos[dest_i][dest_j][dest_k].fuerza = restaVec3(this.nodos[dest_i][dest_j][dest_k].fuerza,mulVector3Matriz3(peso_grad,neg_fuerza_noPonderada));  
-                       //)console.log("fuerza: ",this.nodos[dest_i][dest_j][dest_k].fuerza);
-                        
                     }
                 }
             }
@@ -349,12 +303,14 @@ class Grid{
     
     calcular_velocidades_grid(delta_t,colision_objetos){
         for(var i=0;i<this.nodos_en_uso.length;i++){
+            // console.log("Fuerza 4-5-1: ",this.nodos_en_uso[i].fuerza);
             //console.log("nodos en uso: ",this.nodos_en_uso.length);
             this.nodos_en_uso[i].siguiente_velocidad = this.nodos_en_uso[i].velocidad;
             //console.log("siguiente velocidad: ",this.nodos_en_uso[i].siguiente_velocidad);
             
             if(this.nodos_en_uso[i].masa > 0){
                 //console.log("masa: ",this.nodos_en_uso[i].masa);
+                //console.log("Fuerza 4-5-2: ",this.nodos_en_uso[i].fuerza);
                 this.nodos_en_uso[i].siguiente_velocidad = sumaVec3(this.nodos_en_uso[i].siguiente_velocidad,Vec3MulEscalar(this.nodos_en_uso[i].fuerza,(delta_t/this.nodos_en_uso[i].masa))); 
             }
             
@@ -368,6 +324,31 @@ class Grid{
             }
         }
     }
+    
+    /*calcular_velocidades_grid(delta_t,colision_objetos){
+        for(var i=0;i<this.todas_particulas.length;i++){
+            
+            for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
+                for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
+                    for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
+                       this.nodos[dest_i][dest_j][dest_k].siguiente_velocidad = this.nodos[dest_i][dest_j][dest_k].velocidad;  
+                       //)console.log("fuerza: ",this.nodos[dest_i][dest_j][dest_k].fuerza);
+                        
+                        if(this.nodos[dest_i][dest_j][dest_k].masa > 0){
+                          this.nodos[dest_i][dest_j][dest_k].siguiente_velocidad = sumaVec3(this.nodos[dest_i][dest_j][dest_k].siguiente_velocidad,Vec3MulEscalar(this.nodos[dest_i][dest_j][dest_k].fuerza,(delta_t/this.nodos[dest_i][dest_j][dest_k].masa)));   
+                        }
+                        
+                        var posicion = Vec3MulEscalar(this.nodos[dest_i][dest_j][dest_k].index,this.h);
+            
+                        for(var j=0;j< colision_objetos.length;j++){
+                
+                        this.nodos[dest_i][dest_j][dest_k].siguiente_velocidad = colision_objetos[j].choque(posicion, this.nodos[dest_i][dest_j][dest_k].siguiente_velocidad, delta_t);
+                        }
+                    }
+                }
+            }
+        }   
+    }*/
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Sexto paso - Resolver el sistema lineal
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

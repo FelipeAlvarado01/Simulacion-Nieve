@@ -40,7 +40,7 @@ class Simulacion{
     
     dibujarContenido(){
         if(!this.is_paused){
-            for(var i = 0; i < this.paso_simulacion; i++){
+            for(var i = 0; i < 30; i++){
                 
                 for(var j=0;j< this.colision_objecto.length;j++){
                     if(!this.colision_objecto[j].es_estacionaria()){
@@ -65,7 +65,6 @@ class Simulacion{
         //console.log("Tamaño de todas las particulas: "+todas_particulas.length);
         
         for(var i=0;i<todas_particulas.length;i++){
-            console.log("si");
             //console.log("pos x draw: "+todas_particulas[i].posicion.x);
             //console.log("pos y draw: "+todas_particulas[i].posicion.y);
             //console.log("pos z draw: "+todas_particulas[i].posicion.z);
