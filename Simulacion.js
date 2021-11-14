@@ -41,18 +41,21 @@ class Simulacion{
     dibujarContenido(){
         if(!this.is_paused){
             for(var i = 0; i < this.paso_simulacion; i++){
+                
                 for(var j=0;j< this.colision_objecto.length;j++){
                     if(!this.colision_objecto[j].es_estacionaria()){
                         this.colision_objecto[j].actualizar_posicion(this.delta_t);
                     }
                 }
-                console.log("Si estoy simulando");
+                //console.log("Si estoy simulando");
                 this.grid.simular(this.delta_t, this.aceleracion_externa,this.colision_objecto, this.parametros);
+                console.log("-----------------------------------------------------");
             }
+            //console.log("Llego aqui")
         }
         
         //Actualizar la posicion de la particula
-        
+        //console.log("Dibujando particulas");
         this.dibujarParticulas(); 
         //this.dibujarNodoGrid();
     }
@@ -62,10 +65,10 @@ class Simulacion{
         //console.log("Tamaño de todas las particulas: "+todas_particulas.length);
         
         for(var i=0;i<todas_particulas.length;i++){
-            //console.log("si");
-            //console.log("pos x: "+todas_particulas[i].posicion.x);
-            //console.log("pos y: "+todas_particulas[i].posicion.y);
-            //console.log("pos z: "+todas_particulas[i].posicion.z);
+            console.log("si");
+            //console.log("pos x draw: "+todas_particulas[i].posicion.x);
+            //console.log("pos y draw: "+todas_particulas[i].posicion.y);
+            //console.log("pos z draw: "+todas_particulas[i].posicion.z);
             var len = todas_particulas[i].cbrt_volumen;
             
             var modelo_particula = new THREE.Matrix4();
@@ -83,7 +86,6 @@ class Simulacion{
             scene.add(punto);
             this.objetos_en_escena.push(punto);
             
-            //console.log("Se dibujo la particula");  
         }
     }
     
@@ -94,12 +96,6 @@ class Simulacion{
         this.objetos_en_escena.length = 0;
     }
     
-    /*dibujarGrid(){
-       const size = 10;
-       const divisions = 10;
-       const gridHelper = new THREE.GridHelper( size, divisions );
-       scene.add( gridHelper ); 
-    }*/
     
     dibujarNodoGrid(){
         this.grid.eliminarNodosNoUsados();

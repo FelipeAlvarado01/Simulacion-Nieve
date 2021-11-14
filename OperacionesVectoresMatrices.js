@@ -217,6 +217,12 @@ function transpuestaMat3(matriz_1){
     return matResult.transpose();
 }
 
+function determinateMat3(matriz){
+    var matD = matriz;
+    return matD.determinant();
+    
+}
+
 
 function clamp(vector,minVal,maxVal){
     //min(max(vector,minVal),maxVal)

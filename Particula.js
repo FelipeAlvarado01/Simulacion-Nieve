@@ -17,7 +17,16 @@ class Particula{
         this.G_deformacion_P = new THREE.Matrix3();
         this.F_hat_Ep = new THREE.Matrix3(); //Fuerza eslastica de la particula
         
+        //this.G_deformacion_E.set(0,0,0,0,0,0,0,0,0);
+        //this.G_deformacion_P.set(0,0,0,0,0,0,0,0,0);
+        //this.F_hat_Ep.set(0,0,0,0,0,0,0,0,0);
         //Creacion de atributos para la B-spline
+        
+        
+        //console.log("G_deformacion_E: ",this.G_deformacion_E.elements)
+        //console.log("G_deformacion_P: ",this.G_deformacion_P.elements)
+        //console.log("F_hat_Ep: ",this.F_hat_Ep.elements)
+        
         this.i_lo;
         this.i_hi;
         this.j_lo;
@@ -73,8 +82,6 @@ class Particula{
     }
     
     B_spline_en(grid_i, grid_j, grid_k){
-        //console.log("b_spline_en grid_i: "+grid_i);
-        //console.log("b_spline_en this.i_lo: "+this.i_lo);
         return this.val_b_spline[grid_i - this.i_lo][grid_j - this.j_lo][grid_k - this.k_lo];
     }
     

@@ -3,7 +3,7 @@ class GridNode{
     //Atributos del nodo
     constructor(){
         this.index = new THREE.Vector3();	// the {i, j, k} index of the grid node es un vector
-        this.masa = new THREE.Vector3();			// interpolated mass
+        this.masa = 0;			// interpolated mass
         this.velocidad = new THREE.Vector3();		// interpolated velocity
         this.siguiente_velocidad = new THREE.Vector3(); // for part 4, 5, 6
         this.fuerza = new THREE.Vector3();
@@ -52,6 +52,8 @@ class Grid{
                 this.nodos[i][j] = new Array(res_y);
             }
         }
+        
+        
         //if(this.nodos[1][1][1] == null){
           //  console.log("Si es vacio");
         //}
@@ -82,17 +84,21 @@ class Grid{
         //console.log("Si estoy reseteando");
         for(var i=0;i<this.nodos_en_uso.length;i++){
            this.nodos_en_uso[i].masa = 0
-           this.nodos_en_uso[i].velocidad = new THREE.Vector3();
-           this.nodos_en_uso[i].siguiente_velocidad = new THREE.Vector3();
-           this.nodos_en_uso[i].fuerza = new THREE.Vector3();
+           this.nodos_en_uso[i].velocidad = new THREE.Vector3(0,0,0);
+           this.nodos_en_uso[i].siguiente_velocidad = new THREE.Vector3(0,0,0);
+           this.nodos_en_uso[i].fuerza = new THREE.Vector3(0,0,0);
            this.nodos_en_uso[i].particulas.length = 0; //Se limpia el array de particula
-           //this.nodos_en_uso[i].particulas = 0 ;
         } 
+        this.nodos_en_uso.length = 0;
         
         for(var i=0;i<this.todas_particulas.length;i++){
             this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas[i].posicion,Vec3SubEscalar(new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z),1e-5))); //subScalar resta un escalar a un vector
             
             var index = Vec3DivEscalar(this.todas_particulas[i].posicion,this.h).floor();
+            
+            //console.log("index x: ",index.x);
+            //console.log("index y: ",index.y);
+            //console.log("index z: ",index.z);
              
             this.todas_particulas[i].Calculos_limites_vencidad();
             this.todas_particulas[i].Calculos_gradiente_b_spline();
@@ -100,35 +106,57 @@ class Grid{
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
-                        
+                        //console.log("reset-dest_i: ",dest_i);
+                        //console.log("dest_j: ",dest_j);
+                        //console.log("dest_k: ",dest_k);
                         var nodo = this.nodos[dest_i][dest_j][dest_k];
                         if(nodo == null){
-                           //console.log("Este nodo esta vacio");
                            nodo =  new GridNode();
-                           //nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor();
-                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k);
+                           nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor();
                            this.nodos[dest_i][dest_j][dest_k] = nodo;
                         }
-                        this.nodos_en_uso.push(nodo); //Se llena el array nodos_en_uso
-                        //console.log("si");
+                        
+                        this.nodos_en_uso.push(nodo);
+                        //this.nodos_en_uso.push(nodo); //Se llena el array nodos_en_uso
+                        /*if(this.nodos_en_uso.length<1){
+                            this.nodos_en_uso.push(nodo);
+                            console.log("Si");
+                        }
+                        else{
+                            set(nodo,this.nodos_en_uso);
+                            console.log("No");
+                        }*/
                     }
                 }
             }
+            //console.log("posicion particula x: ",this.todas_particulas[i].posicion.x);
+            //this.nodos[index.x][index.y][index.z] = new GridNode(); //Es una variable que almacenara el objeto NodoGrid
+            //this.nodos[index.x][index.y][index.z].particulas.push(this.todas_particulas[i]); //Ingresa a su atributo particulas
             
-            //this.nodos[index.x][index.y][index.z] = new GridNode();; //Es una variable que almacenara el objeto NodoGrid
-            //var nodo_particulas =this.nodos[index.x][index.y][index.z]; //Es una variable que almacenara el objeto NodoGrid
-            //nodo_particulas.particulas.push(this.todas_particulas[i]); //Ingresa a su atributo particulas
+            this.nodos[index.x][index.y][index.z]; //Es una variable que almacenara el objeto NodoGrid
+            this.nodos[index.x][index.y][index.z].particulas.push(this.todas_particulas[i]);
+            /*console.log("masa: ", this.nodos[index.x][index.y][index.z].masa);
+            var ultimoElemento = this.nodos[index.x][index.y][index.z].particulas.length;
+            console.log("par x: ", this.todas_particulas[i].posicion.x);
+            console.log("par y: ", this.todas_particulas[i].posicion.y);
+            console.log("par z: ", this.todas_particulas[i].posicion.z);
+            console.log("Pos particulas x: ", this.nodos[index.x][index.y][index.z].particulas[ultimoElemento-1].posicion.x);
+            console.log("Pos particulas y: ", this.nodos[index.x][index.y][index.z].particulas[ultimoElemento-1].posicion.y);
+            console.log("Pos particulas z: ", this.nodos[index.x][index.y][index.z].particulas[ultimoElemento-1].posicion.z);
+            console.log("index x: "+this.nodos[index.x][index.y][index.z].index.x);
+            console.log("index y: "+this.nodos[index.x][index.y][index.z].index.y);
+            console.log("index z: "+this.nodos[index.x][index.y][index.z].index.z);*/
 
         }
         
-        console.log("Si hago reset");
+        //console.log("Si hago reset");
     }
     
     //Elimina los nodos no usados
     eliminarNodosNoUsados() { 
         for (var i=0;i<this.nodos_en_uso.length;i++) {
             
-            console.log("Si hay elementos en el nodo en uso");
+            //console.log("Si hay elementos en el nodo en uso");
             var index = Vec3Floor(this.nodos_en_uso[i].index);
             this.nodos[index.x][index.y][index.z] = null;
             this.nodos_en_uso[i] = null; //Elimina los elementos del array 
@@ -140,19 +168,20 @@ class Grid{
 
     //Se llaman los demas metodo de la clase Grid
     simular(delta_t, aceleracion_externa, colision_objetos, parametros){
-        
-        console.log("Si estoy haciendo simulacion");
-       this.steps_since_node_reset++; 
-        console.log("reset_time / delta_t: "+ this.reset_time / delta_t);
-        if (this.steps_since_node_reset > this.reset_time / delta_t) {
-            console.log("Entranado para eliminar nodos no usados");
+        //console.log("Tam nodos en uso:"+this.nodos_en_uso.length);
+        //console.log("Tam nodos en uso:"+this.todas_particulas.length);
+        //Se usa para despues de cierto tiempo borre los nodos no usados y no tener que hacer todos los calculos de esos nodos no importantes despues de cierto timepo t
+        this.steps_since_node_reset++; 
+        //console.log("this.steps_since_node_reset: "+ this.steps_since_node_reset);
+        //if (this.steps_since_node_reset > this.reset_time / delta_t) {
             this.eliminarNodosNoUsados();
             this.steps_since_node_reset = 0;
-        }
+        //}
         //console.log("Si estoy haciendo simulacion");
         this.resetearGrid();
         
-        this.particulaAlaGrid()  //Paso 1
+        
+        this.particulaAlaGrid();  //Paso 1
         
         if (this.primer_paso) { //Este paso solo se hace una vez
             this.calcular_Volumenes_Densidad_de_particula();           // Paso 2.
@@ -160,59 +189,60 @@ class Grid{
         }
         
         this.calcular_F_hat_Ep(delta_t);           // Paso 3.
+        
         this.calculos_fuerza_grid(parametros.mu_0,parametros.lambda_0, parametros.xi);           // Paso 3.
+        
         //aplicar_aceleracion_ext(aceleracion_externa);
         
-        this.calcular_velocidades_grid(delta_t,colision_objetos);           // Paso 4-5.
+       // this.calcular_velocidades_grid(delta_t,colision_objetos);           // Paso 4-5.
         
         
         this.actualizar_gradiente_deformacion(parametros.theta_c, parametros.theta_s, delta_t);           // Paso 7.
         
         this.actualizar_velocidad_particula(parametros.alpha);           // Paso 8.
         
+        console.log("velocidad particula: ",this.todas_particulas[0].velocidad);
         var total_acc = new THREE.Vector3();
         for(var i=0;i<aceleracion_externa.length;i++){
+            //console.log("aceleracion_externa.length: ",aceleracion_externa.length);
             total_acc = sumaVec3(total_acc,aceleracion_externa[i]);
-        }
-        for(var i=0;i<this.todas_particulas.length;i++){
-            //this.todas_particulas[i].velocidad = sumaVec3(this.todas_particulas[i].velocidad,total_acc.multiplyScalar(delta_t));    
-            this.todas_particulas[i].velocidad = sumaVec3(this.todas_particulas[i].velocidad,Vec3MulEscalar(total_acc,delta_t));    
+            //console.log("total acc: ", total_acc);
         }
         
+        for(var i=0;i<this.todas_particulas.length;i++){
+            this.todas_particulas[i].velocidad = sumaVec3(this.todas_particulas[i].velocidad,Vec3MulEscalar(total_acc,delta_t));   
+        }
+        //console.log("velocidad particula: ",this.todas_particulas[0].velocidad);
         this.calcular_colision_particula(delta_t,colision_objetos);           // Paso 9.
         
         this.actulizar_posicion_particula(delta_t);           // Paso 10.
         
-        
+        //console.log("Finalice calculos de simulacion");
     }   
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Primer paso - Tranferir masa y velocidad a la grid
-    particulaAlaGrid(){ 
+    particulaAlaGrid(){ //Bien
         for(var i=0;i<this.todas_particulas.length;i++){
+            /*console.log("pos x: "+this.todas_particulas[i].posicion.x);
+            console.log("pos y: "+this.todas_particulas[i].posicion.y);
+            console.log("pos z: "+this.todas_particulas[i].posicion.z);
             
-            var pos = this.todas_particulas[i].posicion;
-            
-            //console.log(this.todas_particulas[i].i_lo);
-            //console.log(this.todas_particulas[i].i_hi);
+            console.log("vel x: "+this.todas_particulas[i].velocidad.x);
+            console.log("vel y: "+this.todas_particulas[i].velocidad.y);
+            console.log("vel z: "+this.todas_particulas[i].velocidad.z);*/
             
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
-                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);//Es un valor flotante
-                        //console.log("peso: "+ this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k));
+                        //console.log(" step 1-dest_i: "+dest_i);
+                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);//Es un valor flotante          
                         this.nodos[dest_i][dest_j][dest_k].masa += peso * this.todas_particulas[i].masa; //m = sumatoria mi*Wi
-                        
+                        //console.log("this.nodos[dest_i][dest_j][dest_k].masa: "+this.nodos[dest_i][dest_j][dest_k].masa);
                         //var resultMul = this.todas_particulas[i].velocidad.multiplyScalar(peso * this.todas_particulas[i].masa);  
                         var resultMul = Vec3MulEscalar(this.todas_particulas[i].velocidad, peso * this.todas_particulas[i].masa); 
                         this.nodos[dest_i][dest_j][dest_k].velocidad = sumaVec3(this.nodos[dest_i][dest_j][dest_k].velocidad,resultMul);  //v=sumatoria mp*Wi/mi
-                        
-                        /*console.log("dest_i :"+dest_i);
-                        console.log("dest_j :"+dest_j);
-                        console.log("dest_k :"+dest_k);
-                        console.log("hice el primer paso");*/
-                        
                     }
                 }
             }
@@ -223,13 +253,12 @@ class Grid{
                 //this.nodos_en_uso[i].velocidad = this.nodos_en_uso[i].velocidad.divideScalar(this.nodos_en_uso[i].masa);
                 this.nodos_en_uso[i].velocidad = Vec3DivEscalar(this.nodos_en_uso[i].velocidad,this.nodos_en_uso[i].masa);
             }
-        }       
+        }      
     } 
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Segundo paso - Calculo del volumen y velocidad de la particula
-    
-    calcular_Volumenes_Densidad_de_particula(){ 
+    calcular_Volumenes_Densidad_de_particula(){ //Bien
         
         var h3 = Math.pow(this.h,3);
         
@@ -241,8 +270,8 @@ class Grid{
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
-                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);   //Valores flotates
-                        densidad += peso * this.nodos[dest_i][dest_j][dest_k].masa; //mi*Wi 
+                        var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);   //Valores flotates 
+                        densidad += peso * this.nodos[dest_i][dest_j][dest_k].masa; 
                         
                     }
                 }
@@ -255,12 +284,8 @@ class Grid{
     }
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
     //Tecer paso - Calculos de fuerza sobre la particula
-    calcular_F_hat_Ep(delta_t){ //Calculos de fuerza
-        
-        //var h3 = Math.pow(this.h,3);
-        
+    calcular_F_hat_Ep(delta_t){ //Calculos de fuerza//Bien
         for(var i=0;i<this.todas_particulas.length;i++){
             
             var sum = new THREE.Matrix3();
@@ -273,36 +298,35 @@ class Grid{
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
                         var grad_peso = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k); //Es un vector3
-                        var velocidad = this.nodos[dest_i][dest_j][dest_k].velocidad;
-                        
-                        //mulMatrizOfVectores3 = outerProduct en glm (c++)   
-                        sum = sumMatriz3(sum,mulMatrizOfVectores3(velocidad,grad_peso).multiplyScalar(delta_t)); //Bien
+                        //console.log("grad_peso: ",grad_peso);
+                        var velocidad = this.nodos[dest_i][dest_j][dest_k].velocidad;  
+                        sum = sumMatriz3(sum,Mat3MulEscalar(mulMatrizOfVectores3(velocidad,grad_peso),delta_t));
                     }
                 }
             }
             
             var identidad = new THREE.Matrix3(); //Se inicializa como una matriz identidad (unos en su diagonal)
-            //this.todas_particulas[i].F_hat_Ep = this.todas_particulas[i].G_deformacion_E.multiply(sumMatriz3(identidad,sum)); //matriz3x3
             this.todas_particulas[i].F_hat_Ep = mulMatriz3(this.todas_particulas[i].G_deformacion_E,sumMatriz3(identidad,sum));//matriz3x3
+            
+            //console.log("Fuerza: ",this.todas_particulas[i].F_hat_Ep.elements);
         } 
     }
     
     calculos_fuerza_grid(mu_0, lambda_0, xi){
-        
         for(var i=0;i<this.todas_particulas.length;i++){
             
             var volumen = this.todas_particulas[i].volumen;
-            //var sigma_p =  this.todas_particulas[i].G_deformacion_E.transpose().multiply(psi_derivada(mu_0,lambda_0,xi,this.todas_particulas[i]));
             var sigma_p = mulMatriz3(transpuestaMat3(this.todas_particulas[i].G_deformacion_E),psi_derivada(mu_0,lambda_0,xi,this.todas_particulas[i]));
             //var neg_fuerza_noPonderada = sigma_p.multiplyScalar(volumen);
             var neg_fuerza_noPonderada = Mat3MulEscalar(sigma_p,volumen);
-            
+  
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
-                        
+                        //console.log("fuerza: ",this.nodos[dest_i][dest_j][dest_k].fuerza);
                        var peso_grad = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k);
-                       this.nodos[dest_i][dest_j][dest_k].fuerza = restaVec3(this.nodos[dest_i][dest_j][dest_k].fuerza,mulVector3Matriz3(peso_grad,neg_fuerza_noPonderada));    
+                       this.nodos[dest_i][dest_j][dest_k].fuerza = restaVec3(this.nodos[dest_i][dest_j][dest_k].fuerza,mulVector3Matriz3(peso_grad,neg_fuerza_noPonderada));  
+                       //)console.log("fuerza: ",this.nodos[dest_i][dest_j][dest_k].fuerza);
                         
                     }
                 }
@@ -315,7 +339,7 @@ class Grid{
         for(var i=0;i<this.nodos_en_uso.length;i++){
             for(var j=0; j<aceleraciones_externa.length;j++){
                 //this.nodos_en_uso[i].fuerza = sumaVec3(this.nodos_en_uso[i].fuerza,aceleraciones_externa[j].multiplyScalar(this.nodos_en_uso[i].masa));
-                this.nodos_en_uso[i].fuerza = sumaVec3(this.nodos_en_uso[i].fuerza,Vec3MulEscalar(aceleraciones_externa[j],this.nodos_en_uso[i].masa));
+                this.nodos_en_uso[i].fuerza = sumaVec3(this.nodos_en_uso[i].fuerza,Vec3MulEscalar(aceleraciones_externa[j],this.nodos_en_uso[i].masa));       
             }
         }
     }
@@ -325,16 +349,18 @@ class Grid{
     
     calcular_velocidades_grid(delta_t,colision_objetos){
         for(var i=0;i<this.nodos_en_uso.length;i++){
+            //console.log("nodos en uso: ",this.nodos_en_uso.length);
             this.nodos_en_uso[i].siguiente_velocidad = this.nodos_en_uso[i].velocidad;
+            //console.log("siguiente velocidad: ",this.nodos_en_uso[i].siguiente_velocidad);
             
             if(this.nodos_en_uso[i].masa > 0){
-                //this.nodos_en_uso[i].siguiente_velocidad = sumaVec3(this.nodos_en_uso[i].siguiente_velocidad,this.nodos_en_uso[i].fuerza.multiplyScalar(delta_t/this.nodos_en_uso[i].masa)); 
-                this.nodos_en_uso[i].siguiente_velocidad = sumaVec3(this.nodos_en_uso[i].siguiente_velocidad,Vec3MulEscalar(this.nodos_en_uso[i].fuerza,delta_t/this.nodos_en_uso[i].masa)); 
+                //console.log("masa: ",this.nodos_en_uso[i].masa);
+                this.nodos_en_uso[i].siguiente_velocidad = sumaVec3(this.nodos_en_uso[i].siguiente_velocidad,Vec3MulEscalar(this.nodos_en_uso[i].fuerza,(delta_t/this.nodos_en_uso[i].masa))); 
             }
             
             //var posicion = this.nodos_en_uso[i].index.multiplyScalar(this.h);
             var posicion = Vec3MulEscalar(this.nodos_en_uso[i].index,this.h);
-            
+            //console.log("posicion: ",posicion);
             for(var j=0;j< colision_objetos.length;j++){
                 //console.log("objeto en colision no."+j);
                 this.nodos_en_uso[i].siguiente_velocidad = colision_objetos[j].choque(posicion, this.nodos_en_uso[i].siguiente_velocidad, delta_t);
@@ -362,7 +388,6 @@ class Grid{
                        var peso_grad = this.todas_particulas[i].B_spline_gradiente_en(dest_i, dest_j, dest_k);
                        var velocidad = this.nodos[dest_i][dest_j][dest_k].siguiente_velocidad;
                        grad_vp = sumMatriz3(grad_vp,mulMatrizOfVectores3(velocidad,peso_grad));    
-                    
                     }
                 }
             }
@@ -414,18 +439,25 @@ class Grid{
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         
                         var dest = this.nodos[dest_i][dest_j][dest_k];
+                        //console.log("dest velocidad: ",dest.velocidad);
+                        //console.log("dest siguiente velocidad: ",dest.siguiente_velocidad);
                         var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);
-                        //v_pic = sumaVec3(v_pic,dest.siguiente_velocidad.multiplyScalar(peso));
+                        
                         v_pic = sumaVec3(v_pic,Vec3MulEscalar(dest.siguiente_velocidad,peso));
-                        v_flip = sumaVec3(v_flip,restaVec3(dest.siguiente_velocidad,dest.velocidad).multiplyScalar(peso));
-                    
+                        
+                       // console.log("Siguiente velocidad 2: " + this.todas_particulas[i].velocidad.y);
+                        
+                        v_flip = sumaVec3(v_flip,Vec3MulEscalar(restaVec3(dest.siguiente_velocidad,dest.velocidad),(peso))); 
                     }
                 }
             }
             
             //this.todas_particulas[i].velocidad = sumaVec3(v_pic.multiplyScalar(1 - alpha), v_flip.multiplyScalar(alpha));
-            this.todas_particulas[i].velocidad = sumaVec3(Vec3MulEscalar(v_pic,1 - alpha), Vec3MulEscalar(v_flip,alpha));
+            this.todas_particulas[i].velocidad = sumaVec3(Vec3MulEscalar(v_pic,(1 - alpha)), Vec3MulEscalar(v_flip,alpha));
+
+            //console.log("velocidad particula a: ",this.todas_particulas[0].velocidad);
             
+            //console.log("Siguiente velocidad 3: " + this.todas_particulas[i].velocidad.y);
         }
     }
     
@@ -438,9 +470,6 @@ class Grid{
         for (var j=0;j<colision_objetos.length;j++) {
             //console.log("objeto en colision no." + j);
             this.todas_particulas[i].velocidad = colision_objetos[j].choque(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad, delta_t);
-            //console.log("Siguiente velocidad x: " + this.todas_particulas[i].velocidad.x);
-            //console.log("Siguiente velocidad y: " + this.todas_particulas[i].velocidad.y);
-            //console.log("Siguiente velocidad z: " + this.todas_particulas[i].velocidad.z);
         }
       } 
     }
@@ -452,7 +481,7 @@ class Grid{
     actulizar_posicion_particula(delta_t){
         for( var i=0;i<this.todas_particulas.length;i++){
             //this.todas_particulas[i].posicion = sumaVec3(this.todas_particulas[i].posicion,this.todas_particulas[i].velocidad.multiplyScalar(delta_t));
-            this.todas_particulas[i].posicion = sumaVec3(this.todas_particulas[i].posicion,Vec3MulEscalar(this.todas_particulas[i].velocidad,delta_t)); //Metodo de euler
+            this.todas_particulas[i].posicion = sumaVec3(this.todas_particulas[i].posicion,Vec3MulEscalar(this.todas_particulas[i].velocidad,delta_t));//Metodo de euler
         }
     }
 }

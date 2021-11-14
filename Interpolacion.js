@@ -56,7 +56,7 @@ function N_func_derivative(x) { //Funcion derivada N(x)
 	   }
 }
 
-function n_func_init() {
+function n_func_init() {//Se inicializan en el main 
 	//precompute nfunc
 	for (var i = 0; i < NFUNCRESOLUTION; i++) {
 		n_func[i] = N_func(((i+0.5) * NFUNCSPACING) - 2);
@@ -71,7 +71,7 @@ function n_func_memoized(x) {
 	return n_func[idx]; //devuelve el valor que se encuentra en la posicion idx, creo devuelve el nodo o su posicion
 }
 
-function n_func_derivative_init() {
+function n_func_derivative_init() {//Se inicializan en el main 
 	//precompute nfunc
 	for (var i = 0; i < NFUNCRESOLUTION; i++) {
 		n_func_derivative[i] = N_func_derivative(((i+0.5) * NFUNCSPACING) - 2);
@@ -100,7 +100,7 @@ function b_spline_grad(scaled,h) {
 	var dx = components.y * components.z * n_func_derivative_memoized(scaled.x) / h;
 	var dy = components.x * components.z * n_func_derivative_memoized(scaled.y) / h;
 	var dz = components.x * components.y * n_func_derivative_memoized(scaled.z) / h;
-	return new THREE.Vector3(dx, dy , dz);
+	return new THREE.Vector3(dx,dy,dz);
 }
 
 

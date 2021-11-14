@@ -26,6 +26,7 @@
     <script src="https://unpkg.com/lightmatrix/dist/lightmatrix.js"></script>
      
     <!--Librerias para la simulacion-->
+    <script src="Set.js"></script>
     <script src="Escena.js"></script>
     <script src= "CrearEsferaParticulas.js"></script>
     <script src="OperacionesVectoresMatrices.js"></script>
@@ -54,7 +55,7 @@
 
     var mu = 1.0; // static friction
 
-    var num_particulas = 1e-1;
+    var num_particulas = 1e-3;
 
     n_func_init();
     n_func_derivative_init();
@@ -80,7 +81,6 @@
 
     //Se crean las particulas de la simulacion
     var radio = Math.pow(3 * num_particulas / (16 * Math.PI), 1/3) * h;
-    //console.log("radio : "+radio);
     CrearEsferaParticulas(grid,num_particulas,radio);
         
     //Array que guarda las colisiones
@@ -140,11 +140,53 @@
         nievesim.cargarColisionObjeto(objetos);
         nievesim.dibujarContenido();  
         
+        
+        
+        
+        /*var mat = new THREE.Matrix3();
+        mat.set(12,4,12,
+                5,2,5,
+                3,4,32);
+        
+        var rdet = determinateMat3(mat);
+        
+        console.log(rdet);
+        
+        console.log("det 2: ",mat.determinant());
+        
+        console.log(mat.elements);*/
+        
+        /*var p1 = new GridNode();
+        var p2 = new GridNode();
+        
+        p1.index = new THREE.Vector3(1,2,3);        
+        p2.index = new THREE.Vector3(3,2,3); 
+        
+        var n1=0;
+        var n2=1;
+        var n3=1;
+        var r = new Map();
+        r.set(Object.keys({p1,p2}));
+        //r.set(Object.entries(p2));
+        //r.add(n3);
+        
+        console.log("Tamaño: ",r.size);
+        
+        for (const value of r) {
+            //var resp =value.posicion.x*2;  
+            console.log(r); // logs 1, 2 and 3
+        }*/
+        
+        /*var myArray = [p1, p2];
+        var uniqueArray = myArray.filter((val, ind, arr) => arr.indexOf(val) === ind);
+        console.log("Original Array = ",myArray);
+        console.log("Array with unique values = ",uniqueArray);*/
+        
     }    
 
 	function render(){
-      //nievesim.eliminarObjetosEscena();
-      //nievesim.dibujarContenido();  
+      nievesim.eliminarObjetosEscena();
+      nievesim.dibujarContenido();  
     }
         
     function animate() {
