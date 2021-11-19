@@ -373,7 +373,7 @@ class Grid{
            var S_hat_vec = svdjs_a_threeVector3(q);
            
            var S_vec = S_hat_vec.clampScalar(1-theta_c, 1+theta_s);
-           var S_vec = Vec3ClampScalar(S_hat_vec,1 - theta_c, 1 + theta_s);
+           //var S_vec = Vec3ClampScalar(S_hat_vec,1 - theta_c, 1 + theta_s);
            
            var S = new THREE.Matrix3();
            S.set(S_vec.x,0,0,
@@ -385,8 +385,10 @@ class Grid{
                      0,1/S_vec.y,0,
                      0,0,1/S_vec.z);
            
-
-          
+            console.log("S_hat_vec: ",S_hat_vec);
+            console.log("S_vec: ",S_vec);
+            console.log("S: ", S.elements);
+            console.log("S_inv: ", S_inv.elements);
            //this.todas_particulas[i].G_deformacion_E = mulMatriz3(mulMatriz3(transpuestaMat3(V),S),U);
            this.todas_particulas[i].G_deformacion_E = mulMatriz3(mulMatriz3(U,S),transpuestaMat3(V));
            console.log("G_deformacion_E_1: ",this.todas_particulas[i].G_deformacion_E);

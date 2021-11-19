@@ -37,7 +37,7 @@ function polar_R(F){ //SVD de una matriz 3x3
     var F_svd = three_a_svdjs(F);
     var { u, v, q } = SVDJS.SVD(F_svd);
     //var R =  u * lightmatrix.adjoint(v);
-    var R =  lightmatrix.product(u, lightmatrix.adjoint(v));
+    var R =  lightmatrix.product(lightmatrix.adjoint(v),u);
     
     return svdjs_a_three(R);  
 }
@@ -52,22 +52,15 @@ function lame_lambda(lambda_0, xi, J_p,J_e){
 }
 
 function psi_derivada(mu_0,lambda_0,xi,particula){
-    //console.log("Si entro a psi");
-    //console.log("F_hat_Ep: ",particula.F_hat_Ep.elements);
-    //console.log("G_deformacion_P: ",particula.G_deformacion_P.elements);
-    //var J_p = particula.G_deformacion_P.determinant();
+
     var J_p = determinateMat3(particula.G_deformacion_P);
-    //console.log("Det J_p: ",J_p);
-    //var J_e = particula.F_hat_Ep.determinant();
     var J_e = determinateMat3(particula.F_hat_Ep);
-    //console.log("Det J_e: ",J_e);
-    
     var R_E = polar_R(particula.F_hat_Ep);
 
     return sumMatriz3(restMatriz3(particula.F_hat_Ep,R_E).multiplyScalar(lame_mu(mu_0, xi, J_p)),transponer_inversa(particula.F_hat_Ep).multiplyScalar(lame_lambda(lambda_0, xi, J_p,J_e))); 
     
     //return 2 * lame_mu(mu_0, xi, J_p) * (particle->F_hat_Ep - R_E) + lame_lambda(lambda_0, xi, J_p) * (J_e - 1) * J_e * inverse(transpose(particle->F_hat_Ep));
-
+    
 }
     
  
