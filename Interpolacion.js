@@ -3,6 +3,7 @@
 var NFUNCRESOLUTION = 10000;
 var NFUNCSPACING = 4.0/NFUNCRESOLUTION;
 //var n_func[NFUNCRESOLUTION] = {0};
+
 var n_func = new Array(NFUNCRESOLUTION);
 //n_func[0]=0;
     for(var i = 0;i<n_func.length;i++){
@@ -11,7 +12,6 @@ var n_func = new Array(NFUNCRESOLUTION);
 
 var n_func_derivative = new Array(NFUNCRESOLUTION);
 //n_func_derivative[0] = 0;
-
     for(var i = 0;i<n_func_derivative.length;i++){
        n_func_derivative[i] = 0; 
     }
@@ -47,8 +47,7 @@ function N_func_derivative(x) { //Funcion derivada N(x)
 	var sign = sgn(x);
 	if (abs_x < 1) {
 		return 1.5 * x * x * sign - 2 * x;
-	} else 
-       if (abs_x < 2) {
+	} else if (abs_x < 2) {
 		return -0.5 * x * x * sign + 2 * x - 2 * sign;
 	   } 
        else {
@@ -67,11 +66,11 @@ function n_func_memoized(x) {
 	if (x < -2 || x > 2) {
 		return 0;
 	}
-	var idx = Math.round(Math.floor((x+2)/NFUNCSPACING)); //devuelve el numero menor entre a y b floor(x) redondea valor x el hacia abajo
+	var idx = Math.floor((x+2)/NFUNCSPACING); //devuelve el numero menor entre a y b floor(x) redondea valor x el hacia abajo
 	return n_func[idx]; //devuelve el valor que se encuentra en la posicion idx, creo devuelve el nodo o su posicion
 }
 
-function n_func_derivative_init() {//Se inicializan en el main 
+function n_func_derivative_init(){//Se inicializan en el main 
 	//precompute nfunc
 	for (var i = 0; i < NFUNCRESOLUTION; i++) {
 		n_func_derivative[i] = N_func_derivative(((i+0.5) * NFUNCSPACING) - 2);

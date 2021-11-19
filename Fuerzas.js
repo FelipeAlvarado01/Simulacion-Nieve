@@ -1,9 +1,9 @@
 function three_a_svdjs(F){
     var F_elemt = F.elements; 
     var F_svd =[
-                [F_elemt[0],F_elemt[3],F_elemt[6]],
-                [F_elemt[1],F_elemt[4],F_elemt[7]],
-                [F_elemt[2],F_elemt[5],F_elemt[8]]
+                [F_elemt[0],F_elemt[1],F_elemt[2]],
+                [F_elemt[3],F_elemt[4],F_elemt[5]],
+                [F_elemt[6],F_elemt[7],F_elemt[8]]
                ];
         
     return F_svd;
@@ -11,9 +11,9 @@ function three_a_svdjs(F){
 
 function svdjs_a_three(F){
     var F_three = new THREE.Matrix3();
-    F_three.set(F[0][0],F[0][1],F[0][2],
-                F[1][0],F[1][1],F[1][2],
-                F[2][0],F[2][1],F[2][2]);
+    F_three.set(F[0][0],F[1][0],F[2][0],
+                F[0][1],F[1][1],F[2][1],
+                F[0][2],F[1][2],F[2][2]);
     
     return F_three;
     

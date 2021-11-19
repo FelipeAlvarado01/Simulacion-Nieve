@@ -75,8 +75,10 @@
 
     var mundoalmodelo = new THREE.Matrix4();
     mundoalmodelo = trasladarMat4(mundoalmodelo,new THREE.Vector3(grid.dim_x / 2, 0, grid.dim_z / 2));    
+    //mundoalmodelo = trasladarMat4(mundoalmodelo,new THREE.Vector3(grid.dim_x / 2, grid.dim_y / 2, grid.dim_z / 2));    
     var modeloalmundo = new THREE.Matrix4();
     modeloalmundo = trasladarMat4(modeloalmundo,new THREE.Vector3(-grid.dim_x / 2, 0, -grid.dim_z / 2));
+    //modeloalmundo = trasladarMat4(modeloalmundo,new THREE.Vector3(-grid.dim_x / 2, -grid.dim_y / 2, -grid.dim_z / 2));
 
 
     //Se crean las particulas de la simulacion
@@ -100,6 +102,7 @@
         var mu = 0.2;
         var color_suelo = new THREE.Color(0x544F4F); //Color del suelo
         var origen = new THREE.Vector3(-1 * grid.dim_x/2,0, -1 * grid.dim_z/2);//(-2.5,0,-2.5)
+        //var origen = new THREE.Vector3(-1 * grid.dim_x/2,-1*grid.dim_y/2, -1 * grid.dim_z/2);//(-2.5,0,-2.5)
         var eje_x = new THREE.Vector3(grid.dim_x,0,0);//(5,0,0)
         var eje_y = new THREE.Vector3(0,grid.dim_y,0);//(0,5,0)
         var eje_z = new THREE.Vector3(0,0,grid.dim_z);//(0,0,5)
@@ -116,14 +119,15 @@
 
         //cargamos los objetos en el array 
         objetos.push(suelo);
-        //objetos.push(cara_1);
-        //objetos.push(cara_2);
-        //objetos.push(cara_3);
-        //objetos.push(cara_4);
+        objetos.push(cara_1);
+        objetos.push(cara_2);
+        objetos.push(cara_3);
+        objetos.push(cara_4);
 
         //Construccion de la cuña
         var color_cunia = new THREE.Color('skyblue');
         var esquina =  new THREE.Vector3(0,grid.dim_y/2,-grid.dim_z/2.5);//(0,2.5,-2)
+        //var esquina =  new THREE.Vector3(0,-0.05*grid.dim_y/2,-grid.dim_z/2);//(0,2.5,-2)
         var borde_superior = new THREE.Vector3(0, 0, 0.8 * grid.dim_z);//(0,0,4)
         var borde1 = new THREE.Vector3(0.15*grid.dim_x, -0.15*grid.dim_y, 0);//(0.75,-0.75,0)
         var borde2 = new THREE.Vector3(-0.15*grid.dim_x, -0.15*grid.dim_y, 0);//(-0.75,-0.75,0)
@@ -132,13 +136,63 @@
         var cunia_2 = new Planos(esquina,borde_superior,borde2,mu,modeloalmundo,mundoalmodelo,color_cunia);
         
         //cargamos las cuñas al array 
-        //objetos.push(cunia_1);
-        //objetos.push(cunia_2);
+        objetos.push(cunia_1);
+        objetos.push(cunia_2);
         
         //Se cargan los metodo de la simulacion
         nievesim.cargarModeloalmundo(modeloalmundo);
         nievesim.cargarColisionObjeto(objetos);
-        nievesim.dibujarContenido();   
+        nievesim.dibujarContenido();  
+        
+            var grad_vp = new THREE.Matrix3
+            grad_vp.set(-102.71756968759635, -2.785804803204193e-16, 1.1742039229938061e-15,
+             2.83221239297499e-15, -105.8934771504573, -1.6842593304435043e-15,
+            -6.303150546018655e-16, -1.6842390016527702e-15, -102.45216014730178);
+
+	       var identity = new THREE.Matrix3();
+
+	       var dgrad_E_next = new THREE.Matrix3();
+            dgrad_E_next.set(0.8972824303124036, -2.7858048032041935e-19, 1.174203922993806e-18,
+                             2.83221239297499e-18, 0.8941065228495427, -1.6842593304435044e-18,
+						    -6.303150546018655e-19, -1.6842390016527702e-18, 0.8975478398526983);
+
+	       var F_next = new THREE.Matrix3(); 
+            F_next.set(0.8972824303124036, -2.7858048032041935e-19, 1.174203922993806e-18,
+                       2.83221239297499e-18, 0.8941065228495427, -1.6842593304435044e-18,
+					   -6.303150546018655e-19, -1.6842390016527702e-18, 0.8975478398526983);
+
+	       var deformation_grad_E = new THREE.Matrix3();
+	       var deformation_grad_P = new THREE.Matrix3();
+        
+            var matPrueba = new THREE.Matrix3();
+            matPrueba.set(5, 4, 3,
+		                  2, 6, 7,
+		                  4, 2, 4);
+           var dgrad_E_svd = three_a_svdjs(matPrueba);
+           var { u, v, q } = SVDJS.SVD(dgrad_E_svd);
+           var U = svdjs_a_three(u);
+           var V = svdjs_a_three(v);
+            console.log("U: ",U);
+            console.log("V: ",V);
+           var S_hat_vec = svdjs_a_threeVector3(q);
+           console.log("S_hat_vec: ",S_hat_vec);
+           var S_vec = Vec3ClampScalar(S_hat_vec,1 - theta_c, 1 + theta_s);
+           
+           var S = new THREE.Matrix3();
+           S.set(S_vec.x,0,0,
+                 0,S_vec.y,0,
+                 0,0,S_vec.z);
+           
+           var S_inv = new THREE.Matrix3();
+           S_inv.set(1/S_vec.x,0,0,
+                     0,1/S_vec.y,0,
+                     0,0,1/S_vec.z);
+           
+
+           deformation_grad_P = mulMatriz3(mulMatriz3(U,S),transpuestaMat3(V));
+           console.log("G_deformacion_E_1: ",deformation_grad_P);
+           deformation_grad_E = mulMatriz3(mulMatriz3(mulMatriz3(V,S_inv),transpuestaMat3(U)),F_next);
+           console.log("G_deformacion_P: ",deformation_grad_E);
     }    
 
 	function render(){

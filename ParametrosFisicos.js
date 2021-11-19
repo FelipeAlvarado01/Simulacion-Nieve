@@ -8,5 +8,17 @@ class ParametrosFisicos{
         this.alpha = alpha;                                              //FLIP/PIC ratio
         this.mu_0 = E_0 / (2 * (1 + nu));                                //Lame parameter
         this.lambda_0 = E_0 * nu / ((1. + nu) * (1. - 2. * nu));         //Lame paramter
+        
+        
+        /*
+        var E_0 = 1.4e5;            // Young's modulus
+        var nu = 0.2;               // Poisson's ratio
+        var xi = 10;                // Hardening coefficient
+        var theta_c = 2.5e-2;       // Critical compression
+        var theta_s = 7.5e-3;       // Critical stretch
+        var alpha = 0.95;           // FLIP/PIC ratio
+
+        var mu = 1.0; // static friction
+        */
     }
 }
