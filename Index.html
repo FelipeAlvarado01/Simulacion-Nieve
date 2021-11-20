@@ -20,11 +20,12 @@
     <script src="js/three.min.js"></script>
     <script src='js/libs/dat.gui.min.js'></script>
     <script src="js/controls/OrbitControls.js"></script>
+    <script src="js/nd.min.js"></script>
     
     <!--Librerias algebraicas para matrices-->
     <script src="https://unpkg.com/svd-js" type="application/javascript"></script>
     <script src="https://unpkg.com/lightmatrix/dist/lightmatrix.js"></script>
-    
+
     <!--Librerias para la simulacion-->
     <script src="Set.js"></script>
     <script src="Escena.js"></script>
@@ -36,7 +37,6 @@
     <script src="Fuerzas.js"></script>
     <script src="Grid.js"></script>
     <script src="Planos.js"></script>
-    <script src="PlanosPrueba.js"></script>
     <script src="Simulacion.js"></script>
    <!-- <script src="main.js"></script>-->
     
@@ -55,7 +55,7 @@
 
     var mu = 1.0; // static friction
 
-    var num_particulas = 1e-3;
+    var num_particulas = 1;
 
     n_func_init();
     n_func_derivative_init();
@@ -142,87 +142,12 @@
         //Se cargan los metodo de la simulacion
         nievesim.cargarModeloalmundo(modeloalmundo);
         nievesim.cargarColisionObjeto(objetos);
-        //nievesim.dibujarContenido();  
-        
-        /*var grad_vp = new THREE.Matrix3
-        grad_vp.set(-102.71756968759635, -2.785804803204193e-16, 1.1742039229938061e-15,
-         2.83221239297499e-15, -105.8934771504573, -1.6842593304435043e-15,
-        -6.303150546018655e-16, -1.6842390016527702e-15, -102.45216014730178);
-
-	    var identity = new THREE.Matrix3();
-
-	    var dgrad_E_next = new THREE.Matrix3();
-        dgrad_E_next.set(0.8972824303124036, -2.7858048032041935e-19, 1.174203922993806e-18,
-                             2.83221239297499e-18, 0.8941065228495427, -1.6842593304435044e-18,
-						    -6.303150546018655e-19, -1.6842390016527702e-18, 0.8975478398526983);
-
-	    var F_next = new THREE.Matrix3(); 
-        F_next.set(0.8972824303124036, -2.7858048032041935e-19, 1.174203922993806e-18,
-                       2.83221239297499e-18, 0.8941065228495427, -1.6842593304435044e-18,
-					   -6.303150546018655e-19, -1.6842390016527702e-18, 0.8975478398526983);
-
-	   var deformation_grad_E = new THREE.Matrix3();
-	    var deformation_grad_P = new THREE.Matrix3();
-        
-        var matPrueba = new THREE.Matrix3();
-        matPrueba.set(5, 4, 3,
-		                  1, 2, 7,
-		                  4, 2, 4);
-        var dgrad_E_svd = three_a_svdjs(dgrad_E_next);
-        var { u, v, q } = SVDJS.SVD(dgrad_E_svd);
-        
-        var U = Mat3MulEscalar(svdjs_a_three(u),-1);
-        var V = Mat3MulEscalar(svdjs_a_three(v),-1);
-        var U_1 = svdjs_a_three(u);
-        var V_1 = svdjs_a_three(v);
-        
-        console.log("U: ",U);
-        console.log("U_1: ",U_1);
-        console.log("V: ",V);
-        console.log("V_1: ",V_1);
-        
-        var S_hat_vec = svdjs_a_threeVector3(q);
-        console.log("S_hat_vec: ",S_hat_vec);
-        var S_vec = Vec3ClampScalar(S_hat_vec,1 - theta_c, 1 + theta_s);
-           
-        var S = new THREE.Matrix3();
-        S.set(S_vec.x,0,0,
-                 0,S_vec.y,0,
-                 0,0,S_vec.z);
-           
-        var S_inv = new THREE.Matrix3();
-        S_inv.set(1/S_vec.x,0,0,
-                     0,1/S_vec.y,0,
-                     0,0,1/S_vec.z);
-           
-        console.log("S_vec: ",S_vec);
-        console.log("S: ", S.elements);
-        console.log("S_inv: ", S_inv.elements);
-        //deformation_grad_P = mulMatriz3(mulMatriz3(U,S),transpuestaMat3(V));
-        deformation_grad_P = mulMatriz3(mulMatriz3(transpuestaMat3(V),S),U);
-        console.log("G_deformacion_E: ",deformation_grad_P);
-        console.log("U*S_inv: ",mulMatriz3(V,S_inv));
-        console.log("R1*trasU: ",mulMatriz3(transpuestaMat3(U),mulMatriz3(V,S_inv)));
-        //deformation_grad_E = mulMatriz3(mulMatriz3(mulMatriz3(V,S_inv),transpuestaMat3(U)),F_next);
-        deformation_grad_E = mulMatriz3(mulMatriz3(mulMatriz3(F_next,transpuestaMat3(U)),S_inv),V);
-        console.log("G_deformacion_P: ",deformation_grad_E);*/
-        
-        
-        const USV = $("[0.8972824303124036 2.83221239297499e-18 -6.303150546018655e-19;-2.7858048032041935e-19 0.8941065228495427 -1.6842390016527702e-18;1.174203922993806e-18 -1.6842593304435044e-18 0.8975478398526983]").svd();
-    
-        /*dgrad_E_next.set(0.8972824303124036, -2.7858048032041935e-19, 1.174203922993806e-18,
-                             2.83221239297499e-18, 0.8941065228495427, -1.6842593304435044e-18,
-						    -6.303150546018655e-19, -1.6842390016527702e-18, 0.8975478398526983);*/
-        console.log(USV.U.toString());
-        console.log(USV.V.toString());
-        console.log(USV.S.toString());
-        
-
+        nievesim.dibujarContenido();  
     }    
 
 	function render(){
-      //nievesim.eliminarObjetosEscena();
-      //nievesim.dibujarContenido();  
+      nievesim.eliminarObjetosEscena();
+      nievesim.dibujarContenido();  
     }
         
     function animate() {

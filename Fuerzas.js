@@ -8,12 +8,31 @@ function three_a_svdjs(F){
         
     return F_svd;
 }
-
+function three_a_nd(F){
+    var F_elemt = F.elements; 
+    var F_svd = nd.array([
+                [F_elemt[0],F_elemt[1],F_elemt[2]],
+                [F_elemt[3],F_elemt[4],F_elemt[5]],
+                [F_elemt[6],F_elemt[7],F_elemt[8]]
+               ]);
+        
+    return F_svd;
+}
 function svdjs_a_three(F){
     var F_three = new THREE.Matrix3();
     F_three.set(F[0][0],F[1][0],F[2][0],
                 F[0][1],F[1][1],F[2][1],
                 F[0][2],F[1][2],F[2][2]);
+    
+    return F_three;
+    
+}
+
+function nd_a_three(F){
+    var F_three = new THREE.Matrix3();
+    F_three.set(F(0,0),F(1,0),F(2,0),
+                F(0,1),F(1,1),F(2,1),
+                F(0,2),F(1,2),F(2,2));
     
     return F_three;
     
@@ -25,19 +44,40 @@ function svdjs_a_threeVector3(F){
     return F_three;
 }
 
+function nd_a_threeVector3(F){
+    var F_three = new THREE.Vector3(F(0),F(1),F(2));
+    
+    return F_three;
+}
+
+
 function transponer_inversa(F){
-    //console.log(F.elements);
     var F_svd = three_a_svdjs(F);
     var R = lightmatrix.inverse(lightmatrix.transpose(F_svd));
-    //var R = lightmatrix.transpose(F_svd);
+
     return svdjs_a_three(R);
 }
 
-function polar_R(F){ //SVD de una matriz 3x3
+/*function polar_R(F){ //SVD de una matriz 3x3
     var F_svd = three_a_svdjs(F);
     var { u, v, q } = SVDJS.SVD(F_svd);
     //var R =  u * lightmatrix.adjoint(v);
     var R =  lightmatrix.product(lightmatrix.adjoint(v),u);
+    
+    return svdjs_a_three(R);  
+}*/
+
+function polar_R(F){ //SVD de una matriz 3x3
+    var F_svd = three_a_nd(F);
+    var [u, q, v]  = nd.la.svd_jac_classic(F_svd);
+    
+    var Uaux = nd_a_three(u);
+    var Vaux = nd_a_three(v).transpose();
+    
+    var U = three_a_svdjs(Uaux);
+    var V = three_a_svdjs(Vaux);
+    
+    var R =  lightmatrix.product(lightmatrix.adjoint(V),U);
     
     return svdjs_a_three(R);  
 }

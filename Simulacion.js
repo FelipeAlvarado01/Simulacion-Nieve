@@ -40,7 +40,7 @@ class Simulacion{
     
     dibujarContenido(){
         if(!this.is_paused){
-            for(var i = 0; i < 30; i++){
+            for(var i = 0; i < 5; i++){
                 
                 for(var j=0;j< this.colision_objecto.length;j++){
                     if(!this.colision_objecto[j].es_estacionaria()){
@@ -49,15 +49,20 @@ class Simulacion{
                 }
                 //console.log("Si estoy simulando");
                 this.grid.simular(this.delta_t, this.aceleracion_externa,this.colision_objecto, this.parametros);
+                var todas_particulas = grid.todas_particulas;
+                console.log("posicion x: "+todas_particulas[0].posicion.x);
+                console.log("posicion y: "+todas_particulas[0].posicion.y);
+                console.log("posicion z: "+todas_particulas[0].posicion.z);
+                
+                console.log("velocidad x: "+todas_particulas[0].velocidad.x);
+                console.log("velocidad y: "+todas_particulas[0].velocidad.y);
+                console.log("velocidad z: "+todas_particulas[0].velocidad.z);
                 console.log("-----------------------------------------------------");
             }
-            //console.log("Llego aqui")
+
         }
         
-        //Actualizar la posicion de la particula
-        //console.log("Dibujando particulas");
         this.dibujarParticulas(); 
-        //this.dibujarNodoGrid();
     }
     
     dibujarParticulas(){
@@ -65,9 +70,7 @@ class Simulacion{
         //console.log("Tamaño de todas las particulas: "+todas_particulas.length);
         
         for(var i=0;i<todas_particulas.length;i++){
-            //console.log("pos x draw: "+todas_particulas[i].posicion.x);
-            //console.log("pos y draw: "+todas_particulas[i].posicion.y);
-            //console.log("pos z draw: "+todas_particulas[i].posicion.z);
+
             var len = todas_particulas[i].cbrt_volumen;
             
             var modelo_particula = new THREE.Matrix4();
