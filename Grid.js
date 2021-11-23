@@ -48,27 +48,28 @@ class Grid{
     }
     
         //Elimina los nodos no usados, es decir solo los que han sido guardador en nodos en uso
-    eliminarNodosNoUsados() { 
+    eliminarNodosNoUsados(){ 
         
         for (var i=0;i<this.nodos_en_uso.length;i++) {
+            
             var index = Vec3Floor(this.nodos_en_uso[i].index);
             this.nodos[index.x][index.y][index.z] = null;
             this.nodos_en_uso[i] = null; //Elimina los elementos del array 
+            
         }
-       
         this.nodos_en_uso.length = 0; //Se limpia el array
     }
     
     resetearGrid(){
-        var cont = 0;
         //console.log("Si estoy reseteando");
         for(var i=0;i<this.nodos_en_uso.length;i++){
            this.nodos_en_uso[i].masa = 0
            this.nodos_en_uso[i].velocidad = new THREE.Vector3(0,0,0);
            this.nodos_en_uso[i].siguiente_velocidad = new THREE.Vector3(0,0,0);
            this.nodos_en_uso[i].fuerza = new THREE.Vector3(0,0,0);
+            //this.nodos[index.x][index.y][index.z] = null;
         } 
-        this.nodos_en_uso.length = 0;
+        //this.nodos_en_uso.length = 0;
         
         for(var i=0;i<this.todas_particulas.length;i++){
             this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas[i].posicion,Vec3SubEscalar(new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z),1e-5))); //subScalar resta un escalar a un vector
@@ -80,13 +81,13 @@ class Grid{
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
                     for(var dest_k=this.todas_particulas[i].k_lo;dest_k<this.todas_particulas[i].k_hi;dest_k++){
                         var nodo = this.nodos[dest_i][dest_j][dest_k];
+                        
                         if(nodo == null){
                            nodo =  new GridNode();
                            nodo.index = new THREE.Vector3(dest_i,dest_j,dest_k).floor();
                            this.nodos[dest_i][dest_j][dest_k] = nodo;
                         }
                         set(nodo, this.nodos_en_uso);
-                        cont++;
                     }
                 }
             }

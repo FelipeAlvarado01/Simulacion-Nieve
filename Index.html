@@ -55,7 +55,7 @@
 
     var mu = 1.0; // static friction
 
-    var num_particulas = 1;
+    var num_particulas = 10;
 
     n_func_init();
     n_func_derivative_init();
@@ -97,7 +97,6 @@
         //Creacion de la escena 3D
         creacion();
         
-        
         //Construccion de la caja que contendra la simulacion
         var mu = 0.2;
         var color_suelo = new THREE.Color(0x544F4F); //Color del suelo
@@ -118,6 +117,7 @@
         var cara_4 = new Planos(o_eje_z,eje_x,eje_y,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en z
 
         //cargamos los objetos en el array 
+        
         objetos.push(suelo);
         objetos.push(cara_1);
         objetos.push(cara_2);

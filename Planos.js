@@ -49,7 +49,7 @@ class Planos{
     
      //Metodos de los planos
 
-    choque(posicion, velocidad, delta_t){
+    /*choque(posicion, velocidad, delta_t){
         
         var velocidad_rel = restaVec3(velocidad,this.velocidad_objeto);
         var modelo_origen = mulVector4Matriz4(this.origen,this.mundoalmodelar);//determina el origen en el que se encuentra el plano 
@@ -99,9 +99,9 @@ class Planos{
         } 
         //console.log("No hay colision");
         return velocidad;
-    }
+    }*/
 
-        /*choque(posicion, velocidad, delta_t){
+        choque(posicion, velocidad, delta_t){
         
         var velocidad_rel = restaVec3(velocidad,this.velocidad_objeto);
         var modelo_origen = mulVector4Matriz4(this.origen,this.mundoalmodelar);//determina el origen en el que se encuentra el plano 
@@ -148,7 +148,7 @@ class Planos{
         } 
         //console.log("No hay colision");
         return velocidad;
-    }*/
+    }
 
     
     render(){
