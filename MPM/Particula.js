@@ -60,7 +60,7 @@ class Particula{
     Calculos para la interpolacion b-spline
     los valores de lo y hi se toman de la posicion de la particula
     */
-    Calculos_limites_vencidad(){
+    Calculos_limites_vencidad(){ //Nhi(Xp)
        this.i_lo = Math.max(Math.ceil(this.posicion.x/this.h - 2),0);
        this.i_hi = Math.min(Math.floor(this.posicion.x/this.h + 2) + 1,this.res.x);
        this.j_lo = Math.max(Math.ceil(this.posicion.y/this.h - 2),0);
@@ -73,12 +73,9 @@ class Particula{
         for( var dest_i=this.i_lo; dest_i<this.i_hi ; dest_i++){
             for(var dest_j=this.j_lo; dest_j<this.j_hi ; dest_j++){
                 for(var dest_k=this.k_lo; dest_k<this.k_hi ; dest_k++){ 
-                    var scaled = Vec3SubVec3(Vec3DivEscalar(this.posicion,this.h),new THREE.Vector3(dest_i, dest_j, dest_k));
-                    //console.log("scaled: ",scaled);
-                    this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Funcion b_spline proviene de interpolacion.js   
-                    //console.log("val_b_spline: ",this.val_b_spline);
-                    this.val_grad_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline_grad(scaled, this.h); //Funcion b_spline_grad proviene de interpolacion.js  
-                    //console.log("val_grad_b_spline: ",this.val_grad_b_spline);
+                    var scaled = Vec3SubVec3(Vec3DivEscalar(this.posicion,this.h),new THREE.Vector3(dest_i, dest_j, dest_k));//N(1/h(xp-ih))N(1/h(yp-jh))N(1/h(zp-kp))
+                    this.val_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline(scaled); //Evalua cada N(x)
+                    this.val_grad_b_spline[dest_i - this.i_lo][dest_j - this.j_lo][dest_k - this.k_lo] = b_spline_grad(scaled, this.h); //gradN(x) 
                 }
             }
         }

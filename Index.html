@@ -20,24 +20,25 @@
     <script src="js/three.min.js"></script>
     <script src='js/libs/dat.gui.min.js'></script>
     <script src="js/controls/OrbitControls.js"></script>
-    <script src="js/nd.min.js"></script>
+    
     
     <!--Librerias algebraicas para matrices-->
     <script src="https://unpkg.com/svd-js" type="application/javascript"></script>
     <script src="https://unpkg.com/lightmatrix/dist/lightmatrix.js"></script>
-
-    <!--Librerias para la simulacion-->
-    <script src="Set.js"></script>
+    <script src="js/nd.min.js"></script>
+    
+    <!--Scripts para la simulacion-->
     <script src="Escena.js"></script>
-    <script src= "CrearEsferaParticulas.js"></script>
-    <script src="OperacionesVectoresMatrices.js"></script>
-    <script src="ParametrosFisicos.js"></script>
-    <script src="Interpolacion.js"></script>
-    <script src="Particula.js"></script>
-    <script src="Fuerzas.js"></script>
-    <script src="Grid.js"></script>
-    <script src="Planos.js"></script>
-    <script src="Simulacion.js"></script>
+    <script src="MPM/Set.js"></script>
+    <script src="MPM/CrearEsferaParticulas.js"></script>
+    <script src="MPM/OperacionesVectoresMatrices.js"></script>
+    <script src="MPM/ParametrosFisicos.js"></script>
+    <script src="MPM/Interpolacion.js"></script>
+    <script src="MPM/Particula.js"></script>
+    <script src="MPM/Fuerzas.js"></script>
+    <script src="MPM/Grid.js"></script>
+    <script src="MPM/Planos.js"></script>
+    <script src="MPM/Simulacion.js"></script>
    <!-- <script src="main.js"></script>-->
     
     <script>
@@ -46,16 +47,16 @@
     var delta_t = 1e-3;
 
     // Parametros fisicos
-    var E_0 = 1.4e5;            // Young's modulus
-    var nu = 0.2;               // Poisson's ratio
-    var xi = 10;                // Hardening coefficient
-    var theta_c = 2.5e-2;       // Critical compression
-    var theta_s = 7.5e-3;       // Critical stretch
-    var alpha = 0.95;           // FLIP/PIC ratio
+    var E_0 = 1.4e5;            // Modulo de Young
+    var nu = 0.2;               // Radio de poison
+    var xi = 10;                // Coeficiente de endurecimiento
+    var theta_c = 2.5e-2;       // Compresion critica
+    var theta_s = 7.5e-3;       // Estiramiento critico
+    var alpha = 0.95;           // FLIP/PIC relacion
 
-    var mu = 1.0; // static friction
+    var mu = 2.0; //Friccion estatica
 
-    var num_particulas = 10;
+    var num_particulas = 1;
 
     n_func_init();
     n_func_derivative_init();
@@ -74,11 +75,11 @@
     nievesim.cargarGrid(grid);
 
     var mundoalmodelo = new THREE.Matrix4();
-    mundoalmodelo = trasladarMat4(mundoalmodelo,new THREE.Vector3(grid.dim_x / 2, 0, grid.dim_z / 2));    
-    //mundoalmodelo = trasladarMat4(mundoalmodelo,new THREE.Vector3(grid.dim_x / 2, grid.dim_y / 2, grid.dim_z / 2));    
+    //mundoalmodelo = trasladarMat4(mundoalmodelo,new THREE.Vector3(grid.dim_x / 2, 0, grid.dim_z / 2));    
+    mundoalmodelo = trasladarMat4(mundoalmodelo,new THREE.Vector3(grid.dim_x / 2, grid.dim_y / 2, grid.dim_z / 2));    
     var modeloalmundo = new THREE.Matrix4();
-    modeloalmundo = trasladarMat4(modeloalmundo,new THREE.Vector3(-grid.dim_x / 2, 0, -grid.dim_z / 2));
-    //modeloalmundo = trasladarMat4(modeloalmundo,new THREE.Vector3(-grid.dim_x / 2, -grid.dim_y / 2, -grid.dim_z / 2));
+    //modeloalmundo = trasladarMat4(modeloalmundo,new THREE.Vector3(-grid.dim_x / 2, 0, -grid.dim_z / 2));
+    modeloalmundo = trasladarMat4(modeloalmundo,new THREE.Vector3(-grid.dim_x / 2, -grid.dim_y / 2, -grid.dim_z / 2));
 
 
     //Se crean las particulas de la simulacion
@@ -100,18 +101,19 @@
         //Construccion de la caja que contendra la simulacion
         var mu = 0.2;
         var color_suelo = new THREE.Color(0x544F4F); //Color del suelo
-        var origen = new THREE.Vector3(-1 * grid.dim_x/2,0, -1 * grid.dim_z/2);//(-2.5,0,-2.5)
-        //var origen = new THREE.Vector3(-1 * grid.dim_x/2,-1*grid.dim_y/2, -1 * grid.dim_z/2);//(-2.5,0,-2.5)
+        //var origen = new THREE.Vector3(-1 * grid.dim_x/2,0, -1 * grid.dim_z/2);//(-2.5,0,-2.5)
+        var origen = new THREE.Vector3(-1 * grid.dim_x/2,-1*grid.dim_y/2, -1 * grid.dim_z/2);//(-2.5,0,-2.5)
         var eje_x = new THREE.Vector3(grid.dim_x,0,0);//(5,0,0)
         var eje_y = new THREE.Vector3(0,grid.dim_y,0);//(0,5,0)
         var eje_z = new THREE.Vector3(0,0,grid.dim_z);//(0,0,5)
         //Suelo
         var suelo = new Planos(origen,eje_x,eje_z,mu,modeloalmundo,mundoalmodelo,color_suelo);
         //Caras
-        var color_caras = new THREE.Color(0xD7C3F3);
+        var color_caras = new THREE.Color(0x757070);
+        var color_caras_2 = new THREE.Color(0x484646);
         var o_eje_x = sumaVec3(origen,eje_x);
         var o_eje_z = sumaVec3(origen,eje_z);
-        var cara_1 = new Planos(origen,eje_x,eje_y,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en -z
+        var cara_1 = new Planos(origen,eje_y,eje_x,mu,modeloalmundo,mundoalmodelo,color_caras_2);//cara en -z
         var cara_2 = new Planos(origen,eje_z,eje_y,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en -x
         var cara_3 = new Planos(o_eje_x,eje_y,eje_z,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en x
         var cara_4 = new Planos(o_eje_z,eje_x,eje_y,mu,modeloalmundo,mundoalmodelo,color_caras);//cara en z
@@ -126,8 +128,8 @@
 
         //Construccion de la cuña
         var color_cunia = new THREE.Color('skyblue');
-        var esquina =  new THREE.Vector3(0,grid.dim_y/2,-grid.dim_z/2.5);//(0,2.5,-2)
-        //var esquina =  new THREE.Vector3(0,-0.05*grid.dim_y/2,-grid.dim_z/2);//(0,2.5,-2)
+        //var esquina =  new THREE.Vector3(0,grid.dim_y/2,-grid.dim_z/2.5);//(0,2.5,-2)
+        var esquina =  new THREE.Vector3(0,-0.05*grid.dim_y/2,-grid.dim_z/2);//(0,2.5,-2)
         var borde_superior = new THREE.Vector3(0, 0, 0.8 * grid.dim_z);//(0,0,4)
         var borde1 = new THREE.Vector3(0.15*grid.dim_x, -0.15*grid.dim_y, 0);//(0.75,-0.75,0)
         var borde2 = new THREE.Vector3(-0.15*grid.dim_x, -0.15*grid.dim_y, 0);//(-0.75,-0.75,0)

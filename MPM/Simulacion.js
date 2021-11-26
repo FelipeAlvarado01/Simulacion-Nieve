@@ -40,7 +40,7 @@ class Simulacion{
     
     dibujarContenido(){
         if(!this.is_paused){
-            for(var i = 0; i < 5; i++){
+            for(var i = 0; i < 30; i++){
                 
                 for(var j=0;j< this.colision_objecto.length;j++){
                     if(!this.colision_objecto[j].es_estacionaria()){
@@ -50,14 +50,14 @@ class Simulacion{
                 //console.log("Si estoy simulando");
                 this.grid.simular(this.delta_t, this.aceleracion_externa,this.colision_objecto, this.parametros);
                 var todas_particulas = grid.todas_particulas;
-                console.log("posicion x: "+todas_particulas[0].posicion.x);
+                /*console.log("posicion x: "+todas_particulas[0].posicion.x);
                 console.log("posicion y: "+todas_particulas[0].posicion.y);
                 console.log("posicion z: "+todas_particulas[0].posicion.z);
                 
                 console.log("velocidad x: "+todas_particulas[0].velocidad.x);
                 console.log("velocidad y: "+todas_particulas[0].velocidad.y);
                 console.log("velocidad z: "+todas_particulas[0].velocidad.z);
-                console.log("-----------------------------------------------------");
+                console.log("-----------------------------------------------------");*/
             }
 
         }
@@ -97,41 +97,4 @@ class Simulacion{
         }
         this.objetos_en_escena.length = 0;
     }
-    
-    
-    dibujarNodoGrid(){
-        this.grid.eliminarNodosNoUsados();
-        this.grid.resetearGrid();
-        
-        for(var i=0;i<this.grid.nodos_en_uso.length;i++){
-            console.log("si grafica nodos grid");
-            if(this.grid.nodos_en_uso[i].particulas.length > 0){
-                
-               
-                var len = this.grid.h; 
-                var centro_nodo = Vec3MulEscalar(sumaVec3(this.grid.nodos_en_uso[i].index,new THREE.Vector3(0.5,0.5,0.5)),this.grid.h);
-                
-                var modelo_nodo = new THREE.Matrix4();
-                modelo_nodo = mulMatriz4(modelo_nodo,this.modeloalmundo);
-                modelo_nodo = mulMatriz4(modelo_nodo,trasladarMat4(new THREE.Matrix4(), centro_nodo));
-                
-                var geoPunto = new THREE.Geometry();//Se crean las particulas de nieve
-                geoPunto.vertices.push(new THREE.Vector3(0,0,0));
-                var matPunto = new THREE.PointsMaterial( {color:0xDBDBDB } );
-                var punto = new THREE.Points(geoPunto,matPunto);
-                punto.applyMatrix(modelo_nodo);//Aplicar la matriz de traslación al objeto				
-                punto.elementsNeedUpdate = true;
-                scene.add(punto); 
-            }  
-            
-        }
-    }
-    
-    /*dibujarFuerzaGrid(){
-        
-    }
-    
-    dibujarFuerzaParticula(){
-        
-    }*/
 }

@@ -51,11 +51,9 @@ class Grid{
     eliminarNodosNoUsados(){ 
         
         for (var i=0;i<this.nodos_en_uso.length;i++) {
-            
             var index = Vec3Floor(this.nodos_en_uso[i].index);
             this.nodos[index.x][index.y][index.z] = null;
             this.nodos_en_uso[i] = null; //Elimina los elementos del array 
-            
         }
         this.nodos_en_uso.length = 0; //Se limpia el array
     }
@@ -70,7 +68,7 @@ class Grid{
             //this.nodos[index.x][index.y][index.z] = null;
         } 
         //this.nodos_en_uso.length = 0;
-        
+        console.log("Tam nodos en uso: ", this.nodos_en_uso.length);
         for(var i=0;i<this.todas_particulas.length;i++){
             this.todas_particulas[i].posicion = maximoVec3(new THREE.Vector3(), minimoVec3(this.todas_particulas[i].posicion,Vec3SubEscalar(new THREE.Vector3(this.dim_x,this.dim_y,this.dim_z),1e-5))); //subScalar resta un escalar a un vector
             
@@ -98,10 +96,10 @@ class Grid{
     simular(delta_t, aceleracion_externa, colision_objetos, parametros){
         
         
-        if (this.steps_since_node_reset > this.reset_time / delta_t) {
+        //if (this.steps_since_node_reset > this.reset_time / delta_t) {
             this.eliminarNodosNoUsados();
             this.steps_since_node_reset = 0;
-        }
+        //}
         //console.log("Si estoy haciendo simulacion");
         this.resetearGrid();
         
@@ -117,10 +115,7 @@ class Grid{
         
         //this.calculos_fuerza_grid(parametros.mu_0,parametros.lambda_0, parametros.xi);           // Paso 3.
         
-        //aplicar_aceleracion_ext(aceleracion_externa);
-        
         this.calcular_velocidades_grid(delta_t,colision_objetos);           // Paso 4-5.
-        
         
         this.actualizar_gradiente_deformacion(parametros.theta_c, parametros.theta_s, delta_t);           // Paso 7.
         
@@ -146,13 +141,6 @@ class Grid{
     //Primer paso - Tranferir masa y velocidad a la grid
     particulaAlaGrid(){ //Bien
         for(var i=0;i<this.todas_particulas.length;i++){
-            /*console.log("pos x: "+this.todas_particulas[i].posicion.x);
-            console.log("pos y: "+this.todas_particulas[i].posicion.y);
-            console.log("pos z: "+this.todas_particulas[i].posicion.z);
-            
-            console.log("vel x: "+this.todas_particulas[i].velocidad.x);
-            console.log("vel y: "+this.todas_particulas[i].velocidad.y);
-            console.log("vel z: "+this.todas_particulas[i].velocidad.z);*/
             
             for(var dest_i=this.todas_particulas[i].i_lo; dest_i<this.todas_particulas[i].i_hi; dest_i++){
                 for(var dest_j=this.todas_particulas[i].j_lo;dest_j<this.todas_particulas[i].j_hi;dest_j++){
@@ -160,9 +148,7 @@ class Grid{
                         
                         //console.log(" step 1-dest_i: "+dest_i);
                         var peso = this.todas_particulas[i].B_spline_en(dest_i, dest_j, dest_k);//Es un valor flotante          
-                        this.nodos[dest_i][dest_j][dest_k].masa += peso * this.todas_particulas[i].masa; //m = sumatoria mi*Wi
-                        //console.log("this.nodos[dest_i][dest_j][dest_k].masa: "+this.nodos[dest_i][dest_j][dest_k].masa);
-                        //var resultMul = this.todas_particulas[i].velocidad.multiplyScalar(peso * this.todas_particulas[i].masa);  
+                        this.nodos[dest_i][dest_j][dest_k].masa += peso * this.todas_particulas[i].masa; //m = sumatoria mi*Wi 
                         var resultMul = Vec3MulEscalar(this.todas_particulas[i].velocidad, peso * this.todas_particulas[i].masa); 
                         this.nodos[dest_i][dest_j][dest_k].velocidad = sumaVec3(this.nodos[dest_i][dest_j][dest_k].velocidad,resultMul);  //v=sumatoria mp*Wi/mi
                     }
@@ -175,7 +161,7 @@ class Grid{
                 //this.nodos_en_uso[i].velocidad = this.nodos_en_uso[i].velocidad.divideScalar(this.nodos_en_uso[i].masa);
                 this.nodos_en_uso[i].velocidad = Vec3DivEscalar(this.nodos_en_uso[i].velocidad,this.nodos_en_uso[i].masa);
             }
-        }*/      
+        }*/  
     } 
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,18 +246,10 @@ class Grid{
         }   
     }
     
-    //Aplicar fuerzas externas
-    aplicar_aceleracion_ext(aceleraciones_externa){
-        for(var i=0;i<this.nodos_en_uso.length;i++){
-            for(var j=0; j<aceleraciones_externa.length;j++){
-                
-                this.nodos_en_uso[i].fuerza = sumaVec3(this.nodos_en_uso[i].fuerza,Vec3MulEscalar(aceleraciones_externa[j],this.nodos_en_uso[i].masa));       
-            }
-        }
-    }
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Cuarto y quinto paso - Actualizar las velocidades de los nodos de la cuadrícula y hacer colisiones   
+    //Cuarto y quinto paso - Actualizar las velocidades de los nodos de la cuadrícula y hacer colisiones  
+    
     calcular_velocidades_grid(delta_t,colision_objetos){
         for(var i=0;i<this.nodos_en_uso.length;i++){
             // console.log("Fuerza 4-5-1: ",this.nodos_en_uso[i].fuerza);

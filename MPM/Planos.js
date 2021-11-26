@@ -50,7 +50,7 @@ class Planos{
      //Metodos de los planos
 
     /*choque(posicion, velocidad, delta_t){
-        
+        console.log("velocidad x: ", velocidad.x);
         var velocidad_rel = restaVec3(velocidad,this.velocidad_objeto);
         var modelo_origen = mulVector4Matriz4(this.origen,this.mundoalmodelar);//determina el origen en el que se encuentra el plano 
         var siguiente_origen_modelo = mulVector4Matriz4(sumaVec3(this.origen,Vec3MulEscalar(this.velocidad_objeto,delta_t)),this.mundoalmodelar);//Metodo de euler para determinar la siguiente posicion del plano
@@ -68,12 +68,12 @@ class Planos{
            //Comprueba si siguiente_posicion está dentro de límites finitos
            //console.log("Si se proyecta al plano");
             
-           //Estas lineas solo se usan si se sabe que el objeto se va a mover
+          
            //var siguiente_posicion_plano = restaVec3(siguiente_origen_posicion, Vec3MulEscalar(this.normal,productoPunto(siguiente_origen_posicion,this.normal))); //vec3
-           //var proj_u = productoPunto(siguiente_posicion_plano,this.borde_u);    
-           //var proj_v = productoPunto(siguiente_posicion_plano,this.borde_v); 
+           var proj_u = productoPunto(siguiente_posicion_plano,this.borde_u);    
+           var proj_v = productoPunto(siguiente_posicion_plano,this.borde_v); 
             
-           //if(proj_u > 0 && proj_u < length2(this.borde_u) && proj_v > 0 && proj_v < length2(this.borde_v)){
+           if(proj_u > 0 && proj_u < length2(this.borde_u) && proj_v > 0 && proj_v < length2(this.borde_v)){
                
                //console.log("Si hay colision con friccion");
                var normal_externa;
@@ -96,12 +96,13 @@ class Planos{
                    return sumaVec3(this.velocidad_objeto, Vec3MulEscalar(tangente_velocidad,(1 + this.mu * v_n / mag_tangente_velocidad)));
                }
             //}
-        } 
+            } 
         //console.log("No hay colision");
         return velocidad;
+        }
     }*/
 
-        choque(posicion, velocidad, delta_t){
+    choque(posicion, velocidad, delta_t){
         
         var velocidad_rel = restaVec3(velocidad,this.velocidad_objeto);
         var modelo_origen = mulVector4Matriz4(this.origen,this.mundoalmodelar);//determina el origen en el que se encuentra el plano 
